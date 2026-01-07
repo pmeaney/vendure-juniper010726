@@ -1,0 +1,73 @@
+# This is for local dev (e.g. laptop) development
+services:
+  v-db-juniper010725:
+    image: postgres:16-alpine
+    container_name: v-db-juniper010725
+    env_file:
+      - ./v-db-juniper010725/.env-db.example
+    ports:
+      - "5432:5432"
+    volumes:
+      # Bind mounts - directories from your host mapped into the container
+      - ./v-db-juniper010725/pg-data-vendure-juniper:/var/lib/postgresql/data
+    networks:
+      - dockernet-vendure-juniper
+
+  v-srv-juniper010725:
+    build:
+      context: ./apps/server
+      dockerfile: Dockerfile.server
+    ports:
+      - 3000:3000
+    command: ["npm", "run", "start:server"]
+    volumes:
+      - /usr/src/app
+    environment:
+    # DB_HOST will be some part of this... probably just container name.
+    # DATABASE_URI=postgres://payloadcms-051625grey-user:payloadcmsPass@payloadcms-db-051625grey:5432/payloadcms-db-051625grey
+      DB_HOST: v-db-juniper010725
+      DB_PORT: 5432
+      DB_NAME: vendure_db
+      DB_USERNAME: vendure_db_user
+      DB_PASSWORD: vendure_db_pass
+    networks:
+      - dockernet-vendure-juniper
+
+  v-wrk-juniper010725:
+    build:
+      context: ./apps/server
+      dockerfile: Dockerfile.worker
+    command: ["npm", "run", "start:worker"]
+    volumes:
+      - /usr/src/app
+    environment:
+      DB_HOST: v-db-juniper010725
+      DB_PORT: 5432
+      DB_NAME: vendure_db
+      DB_USERNAME: vendure_db_user
+      DB_PASSWORD: vendure_db_pass
+    networks:
+      - dockernet-vendure-juniper
+
+  v-storefront-juniper010725:
+    build:
+      context: ./apps/server
+      dockerfile: Dockerfile.storefront
+    ports:
+      - 3001:3001
+    command: ["npm", "run", "start:server"]
+    volumes:
+      - /usr/src/app
+    environment:
+    # DB_HOST will be some part of this... probably just container name.
+    # DATABASE_URI=postgres://payloadcms-051625grey-user:payloadcmsPass@payloadcms-db-051625grey:5432/payloadcms-db-051625grey
+      DB_HOST: v-db-juniper010725
+      DB_PORT: 5432
+      DB_NAME: vendure_db
+      DB_USERNAME: vendure_db_user
+      DB_PASSWORD: vendure_db_pass
+    networks:
+      - dockernet-vendure-juniper
+networks:
+  dockernet-vendure-juniper:
+    name: dockernet-vendure-juniper
