@@ -20,6 +20,8 @@ FROM base AS builder
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
 RUN npm run build
+# only Server needs the dashboard built-- not worker
+RUN npm run build:dashboard
 
 # Production runner stage
 FROM base AS prod

@@ -22,6 +22,7 @@ services:
       target: dev # runs dev stage in its Dockerfile-- which includes CMD. Prod stage will be run via CICD
     ports:
       - 3000:3000
+      - 5173:5173
     volumes:
       # Mount source code for hot reload
       - ./my-shop-juniper/apps/server:/usr/src/app

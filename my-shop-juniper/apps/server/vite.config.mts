@@ -4,6 +4,15 @@ import { pathToFileURL } from 'url';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+    // By default, Vite binds to localhost (127.0.0.1).
+    // We need this-- at least for dev.
+    // In dev, this Starts dev server with server: { host: '0.0.0.0', port: 5173 }
+    // in Prod, the build step of  { outDir: 'dist/dashboard' }  will create static file (no server starts up)
+    // So, this should be fine for keeping in both dev & prod, since it won't be used in prod.
+    server: {
+      host: '0.0.0.0',
+      port: 5173,
+    },
     base: '/dashboard',
     build: {
         outDir: join(__dirname, 'dist/dashboard'),
