@@ -1,16 +1,39 @@
+
+
 # Base stage - common dependencies
 FROM node:20-slim AS base
 WORKDIR /app
 
-# Dependencies stage
+# Dependencies stage (only for production build)
 FROM base AS deps
-COPY package.json package-lock.json* ./
-RUN npm ci
+COPY package.json ./
 
-# Development stage - for local development
+# Running fresh install & generating package-lock.json (at least once) from container, which is then shared back with macbook host.
+# on subsequent builds, it can be `npm ci`, since we'll already have the package-lock.json generated from the container the first time.
+# Anytime we upgrade dependency versions, we'll need to once again generate a fresh package-lock.json.
+# Error: Cannot find module '../lightningcss.linux-arm64-gnu.node'
+# Copy if it exists (the * makes it optional)
+COPY package-lock.json* ./  
+
+# If package-lock.json exists, use npm ci (fast). Otherwise, use npm install (generates lockfile)
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+
+# Development stage (standalone - generates own lockfile)
 FROM base AS dev
-COPY package.json package-lock.json* ./
-RUN npm ci
+COPY package.json ./
+
+# Running fresh install & generating package-lock.json (at least once) from container, which is then shared back with macbook host.
+# on subsequent builds, it can be `npm ci`, since we'll already have the package-lock.json generated from the container the first time.
+# Anytime we upgrade dependency versions, we'll need to once again generate a fresh package-lock.json.
+# Error: Cannot find module '../lightningcss.linux-arm64-gnu.node'
+# Copy if it exists (the * makes it optional)
+COPY package-lock.json* ./  
+
+# If package-lock.json exists, use npm ci (fast). Otherwise, use npm install (generates lockfile)
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
+
 COPY . .
 EXPOSE 3001
 ENV PORT=3001
@@ -20,16 +43,14 @@ CMD ["npm", "run", "dev"]
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-
-# Next.js collects telemetry data - disable it
 ENV NEXT_TELEMETRY_DISABLED=1
-
 RUN npm run build
 
-# Production runner stage - optimized production image with standalone output
+# Production runner stage
 FROM base AS prod
 WORKDIR /app
 
+# default env vars to be built into image.  not to worry-- we'll overwrite them via github actions secrets when we go to run the container in the final steps of the CICD deployment
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3001
