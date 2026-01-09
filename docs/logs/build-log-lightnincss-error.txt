@@ -1,0 +1,236 @@
+[+] Running 14/14
+ ✔ vendure-juniper010725-v-wrk-juniper010725                     Built    0.0s 
+ ✔ vendure-juniper010725-v-srv-juniper010725                     Built    0.0s 
+ ✔ vendure-juniper010725-v-storefront-juniper010725              Built    0.0s 
+ ✔ Network dockernet-vendure-juniper                             Created  0.0s 
+ ✔ Volume vendure-juniper010725_worker-dist                      Created  0.0s 
+ ✔ Volume vendure-juniper010725_storefront-node-modules          Created  0.0s 
+ ✔ Volume vendure-juniper010725_storefront-next                  Created  0.0s 
+ ✔ Volume vendure-juniper010725_server-node-modules              Created  0.0s 
+ ✔ Volume vendure-juniper010725_server-dist                      Created  0.0s 
+ ✔ Volume vendure-juniper010725_worker-node-modules              Created  0.0s 
+ ✔ Container v-db-juniper010725                                  Created  0.6s 
+ ✔ Container vendure-juniper010725-v-srv-juniper010725-1         Created  3.8s 
+ ✔ Container vendure-juniper010725-v-wrk-juniper010725-1         Created  3.8s 
+ ✔ Container vendure-juniper010725-v-storefront-juniper010725-1  Created  3.5s 
+Attaching to v-db-juniper010725, v-srv-juniper010725-1, v-storefront-juniper010725-1, v-wrk-juniper010725-1
+v-srv-juniper010725-1  | 
+v-srv-juniper010725-1  | > server@0.1.0 dev
+v-srv-juniper010725-1  | > concurrently --kill-others npm:dev:*
+v-srv-juniper010725-1  | 
+v-storefront-juniper010725-1  | 
+v-storefront-juniper010725-1  | > storefront@0.1.0 dev
+v-wrk-juniper010725-1         | > server@0.1.0 dev
+
+
+v-storefront-juniper010725-1  | > next dev --port 3001
+
+v-wrk-juniper010725-1         | > concurrently --kill-others npm:dev:*
+v-storefront-juniper010725-1  | 
+
+
+
+v-wrk-juniper010725-1         | 
+v-db-juniper010725            | 
+v-db-juniper010725            | PostgreSQL Database directory appears to contain a database; Skipping initialization
+v-db-juniper010725            | 
+v-wrk-juniper010725-1         | [server] 
+v-wrk-juniper010725-1         | [server] > server@0.1.0 dev:server
+v-wrk-juniper010725-1         | [server] > ts-node ./src/index.ts
+v-wrk-juniper010725-1         | [server] 
+v-srv-juniper010725-1         | [server] 
+v-srv-juniper010725-1         | [server] > server@0.1.0 dev:server
+v-srv-juniper010725-1         | [server] > ts-node ./src/index.ts
+v-srv-juniper010725-1         | [server] 
+v-srv-juniper010725-1         | [worker] 
+v-srv-juniper010725-1         | [worker] > server@0.1.0 dev:worker
+v-srv-juniper010725-1         | [worker] > ts-node ./src/index-worker.ts
+v-srv-juniper010725-1         | [worker] 
+v-wrk-juniper010725-1         | [dashboard] 
+v-wrk-juniper010725-1         | [dashboard] > server@0.1.0 dev:dashboard
+v-wrk-juniper010725-1         | [dashboard] > vite --clearScreen false
+v-wrk-juniper010725-1         | [dashboard] 
+v-wrk-juniper010725-1         | [worker] 
+v-wrk-juniper010725-1         | [worker] > server@0.1.0 dev:worker
+v-wrk-juniper010725-1         | [worker] > ts-node ./src/index-worker.ts
+v-wrk-juniper010725-1         | [worker] 
+v-srv-juniper010725-1         | [dashboard] 
+v-srv-juniper010725-1         | [dashboard] > server@0.1.0 dev:dashboard
+v-srv-juniper010725-1         | [dashboard] > vite --clearScreen false
+v-srv-juniper010725-1         | [dashboard] 
+v-db-juniper010725            | 2026-01-09 20:21:13.139 UTC [1] LOG:  starting PostgreSQL 16.11 on aarch64-unknown-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+v-db-juniper010725            | 2026-01-09 20:21:13.139 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+v-db-juniper010725            | 2026-01-09 20:21:13.139 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+v-db-juniper010725            | 2026-01-09 20:21:13.145 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+v-db-juniper010725            | 2026-01-09 20:21:13.167 UTC [30] LOG:  database system was shut down at 2026-01-09 20:10:04 UTC
+v-db-juniper010725            | 2026-01-09 20:21:13.180 UTC [1] LOG:  database system is ready to accept connections
+v-storefront-juniper010725-1  |    ▲ Next.js 16.0.10 (Turbopack, Cache Components)
+v-storefront-juniper010725-1  |    - Local:         http://localhost:3001
+v-storefront-juniper010725-1  |    - Network:       http://172.18.0.5:3001
+v-storefront-juniper010725-1  |    - Experiments (use with caution):
+v-storefront-juniper010725-1  |      ✓ rootParams
+v-storefront-juniper010725-1  | 
+v-storefront-juniper010725-1  |  ✓ Starting...
+v-storefront-juniper010725-1  | Attention: Next.js now collects completely anonymous telemetry regarding usage.
+v-storefront-juniper010725-1  | This information is used to shape Next.js' roadmap and prioritize features.
+v-storefront-juniper010725-1  | You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+v-storefront-juniper010725-1  | https://nextjs.org/telemetry
+v-storefront-juniper010725-1  | 
+v-storefront-juniper010725-1  |  ✓ Ready in 650ms
+v-srv-juniper010725-1         | [dashboard] 8:21:15 PM [vite] (client) info: Loading Vendure config. This can take a short while depending on the size of your project...
+v-srv-juniper010725-1         | [dashboard]   Plugin: vendure:config-loader
+v-wrk-juniper010725-1         | [dashboard] 8:21:15 PM [vite] (client) info: Loading Vendure config. This can take a short while depending on the size of your project...
+v-wrk-juniper010725-1         | [dashboard]   Plugin: vendure:config-loader
+v-wrk-juniper010725-1         | [worker] info 1/9/26, 8:21 PM - [Vendure Worker] Bootstrapping Vendure Worker (pid: 77)... 
+v-srv-juniper010725-1         | [worker] info 1/9/26, 8:21 PM - [Vendure Worker] Bootstrapping Vendure Worker (pid: 65)... 
+v-wrk-juniper010725-1         | [worker] info 1/9/26, 8:21 PM - [Vendure Worker] Vendure Worker is ready 
+v-wrk-juniper010725-1         | [worker] info 1/9/26, 8:21 PM - [JobQueue] Starting queue: apply-collection-filters 
+v-wrk-juniper010725-1         | [worker] info 1/9/26, 8:21 PM - [JobQueue] Starting queue: clean-sessions 
+v-wrk-juniper010725-1         | [worker] info 1/9/26, 8:21 PM - [JobQueue] Starting queue: update-search-index 
+v-wrk-juniper010725-1         | [worker] info 1/9/26, 8:21 PM - [JobQueue] Starting queue: send-email 
+v-wrk-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server] Bootstrapping Vendure Server (pid: 63)... 
+v-srv-juniper010725-1         | [worker] info 1/9/26, 8:21 PM - [Vendure Worker] Vendure Worker is ready 
+v-srv-juniper010725-1         | [worker] info 1/9/26, 8:21 PM - [JobQueue] Starting queue: apply-collection-filters 
+v-srv-juniper010725-1         | [worker] info 1/9/26, 8:21 PM - [JobQueue] Starting queue: clean-sessions 
+v-srv-juniper010725-1         | [worker] info 1/9/26, 8:21 PM - [JobQueue] Starting queue: update-search-index 
+v-srv-juniper010725-1         | [worker] info 1/9/26, 8:21 PM - [JobQueue] Starting queue: send-email 
+v-srv-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server] Bootstrapping Vendure Server (pid: 63)... 
+v-srv-juniper010725-1         | [dashboard] 8:21:17 PM [vite] (client) info: TypeScript compilation completed in 2282ms
+v-srv-juniper010725-1         | [dashboard]   Plugin: vendure:config-loader
+v-wrk-juniper010725-1         | [dashboard] 8:21:17 PM [vite] (client) info: TypeScript compilation completed in 2232ms
+v-wrk-juniper010725-1         | [dashboard]   Plugin: vendure:config-loader
+v-srv-juniper010725-1         | [dashboard] 8:21:17 PM [vite] (client) info: Found 58 potential plugin files in 57ms (scanned 735 files)
+v-srv-juniper010725-1         | [dashboard]   Plugin: vendure:config-loader
+v-wrk-juniper010725-1         | [dashboard] 8:21:17 PM [vite] (client) info: Found 58 potential plugin files in 60ms (scanned 735 files)
+v-wrk-juniper010725-1         | [dashboard]   Plugin: vendure:config-loader
+v-wrk-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [AssetServerPlugin] Creating asset server middleware 
+v-wrk-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [EmailPlugin] Creating dev mailbox middleware 
+v-srv-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [AssetServerPlugin] Creating asset server middleware 
+v-srv-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [EmailPlugin] Creating dev mailbox middleware 
+v-wrk-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [RoutesResolver] HealthController {/health}: 
+v-wrk-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [RouterExplorer] Mapped {/health, GET} route 
+v-srv-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [RoutesResolver] HealthController {/health}: 
+v-srv-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [RouterExplorer] Mapped {/health, GET} route 
+v-srv-juniper010725-1         | [dashboard] 8:21:17 PM [vite] (client) info: Analyzed plugins and found 0 dashboard extensions in 143ms
+v-srv-juniper010725-1         | [dashboard]   Plugin: vendure:config-loader
+v-wrk-juniper010725-1         | [dashboard] 8:21:17 PM [vite] (client) info: Analyzed plugins and found 0 dashboard extensions in 139ms
+v-wrk-juniper010725-1         | [dashboard]   Plugin: vendure:config-loader
+v-wrk-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [GraphQLModule] Mapped {/shop-api, POST} route 
+v-srv-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [GraphQLModule] Mapped {/shop-api, POST} route 
+v-wrk-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [GraphQLModule] Mapped {/admin-api, POST} route 
+v-srv-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [GraphQLModule] Mapped {/admin-api, POST} route 
+v-wrk-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [NestApplication] Nest application successfully started 
+v-wrk-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server] ==================================================== 
+v-wrk-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server]   Vendure server (v3.5.2) now running on port 3000 
+v-wrk-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server] ---------------------------------------------------- 
+v-wrk-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server] Shop API:       http://localhost:3000/shop-api 
+v-wrk-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server] Admin API:      http://localhost:3000/admin-api 
+v-wrk-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server] Dashboard UI:   http://localhost:3000/dashboard 
+v-wrk-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server] GraphiQL Admin: http://localhost:3000/graphiql/admin 
+v-wrk-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server] GraphiQL Shop:  http://localhost:3000/graphiql/shop 
+v-wrk-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server] Asset server:   http://localhost:3000/assets 
+v-wrk-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server] Dev mailbox:    http://localhost:3000/mailbox 
+v-wrk-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server] ==================================================== 
+v-srv-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [NestApplication] Nest application successfully started 
+v-srv-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server] ==================================================== 
+v-srv-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server]   Vendure server (v3.5.2) now running on port 3000 
+v-srv-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server] ---------------------------------------------------- 
+v-srv-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server] Shop API:       http://localhost:3000/shop-api 
+v-srv-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server] Admin API:      http://localhost:3000/admin-api 
+v-srv-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server] Dashboard UI:   http://localhost:3000/dashboard 
+v-srv-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server] GraphiQL Admin: http://localhost:3000/graphiql/admin 
+v-srv-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server] GraphiQL Shop:  http://localhost:3000/graphiql/shop 
+v-srv-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server] Asset server:   http://localhost:3000/assets 
+v-srv-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server] Dev mailbox:    http://localhost:3000/mailbox 
+v-srv-juniper010725-1         | [server] info 1/9/26, 8:21 PM - [Vendure Server] ==================================================== 
+v-srv-juniper010725-1         | [dashboard] 8:21:17 PM [vite] (client) info: Found 0 plugins: 
+v-srv-juniper010725-1         | [dashboard]   Plugin: vendure:config-loader
+v-srv-juniper010725-1         | [dashboard] 8:21:17 PM [vite] (client) info: Vendure config loaded (using export "config") in 2677ms
+v-srv-juniper010725-1         | [dashboard]   Plugin: vendure:config-loader
+v-wrk-juniper010725-1         | [dashboard] 8:21:17 PM [vite] (client) info: Found 0 plugins: 
+v-wrk-juniper010725-1         | [dashboard]   Plugin: vendure:config-loader
+v-wrk-juniper010725-1         | [dashboard] 8:21:17 PM [vite] (client) info: Vendure config loaded (using export "config") in 2618ms
+v-wrk-juniper010725-1         | [dashboard]   Plugin: vendure:config-loader
+v-srv-juniper010725-1         | [dashboard] ✓ Introspection output was generated successfully
+v-srv-juniper010725-1         | [dashboard] 
+v-srv-juniper010725-1         | [dashboard] 8:21:18 PM [vite] (client) info: graphql introspection files output to ./src/gql
+v-srv-juniper010725-1         | [dashboard]   Plugin: vendure:gql-tada
+v-wrk-juniper010725-1         | [dashboard] ✓ Introspection output was generated successfully
+v-wrk-juniper010725-1         | [dashboard] 
+v-wrk-juniper010725-1         | [dashboard] 8:21:18 PM [vite] (client) info: graphql introspection files output to ./src/gql
+v-wrk-juniper010725-1         | [dashboard]   Plugin: vendure:gql-tada
+v-srv-juniper010725-1         | [dashboard] 
+v-srv-juniper010725-1         | [dashboard]   VITE v6.4.1  ready in 5068 ms
+v-srv-juniper010725-1         | [dashboard] 
+v-srv-juniper010725-1         | [dashboard]   ➜  Local:   http://localhost:5173/dashboard
+v-srv-juniper010725-1         | [dashboard]   ➜  Network: http://172.18.0.4:5173/dashboard
+v-wrk-juniper010725-1         | [dashboard] 
+v-wrk-juniper010725-1         | [dashboard]   VITE v6.4.1  ready in 5076 ms
+v-wrk-juniper010725-1         | [dashboard] 
+v-wrk-juniper010725-1         | [dashboard]   ➜  Local:   http://localhost:5173/dashboard
+v-wrk-juniper010725-1         | [dashboard]   ➜  Network: http://172.18.0.3:5173/dashboard
+v-db-juniper010725            | 2026-01-09 20:26:13.269 UTC [28] LOG:  checkpoint starting: time
+v-db-juniper010725            | 2026-01-09 20:26:13.289 UTC [28] LOG:  checkpoint complete: wrote 2 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.003 s, sync=0.001 s, total=0.020 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB; lsn=0/1EB8760, redo lsn=0/1EB8728
+v-srv-juniper010725-1         | [dashboard] 8:30:58 PM [vite] (client) info: Found 0 Dashboard extensions in 0ms
+v-srv-juniper010725-1         | [dashboard]   Plugin: vendure:dashboard-extensions-metadata
+v-srv-juniper010725-1         | [dashboard] Sourcemap for "/usr/src/app/node_modules/@0no-co/graphql.web/dist/graphql.web.mjs" points to missing source files
+v-storefront-juniper010725-1  |  ⨯ ./src/app/globals.css
+v-storefront-juniper010725-1  | Error evaluating Node.js code
+v-storefront-juniper010725-1  | Error: Cannot find module '../lightningcss.linux-arm64-gnu.node'
+v-storefront-juniper010725-1  | Require stack:
+v-storefront-juniper010725-1  | - /app/node_modules/lightningcss/node/index.js
+v-storefront-juniper010725-1  | - /app/node_modules/@tailwindcss/node/dist/index.js
+v-storefront-juniper010725-1  | - /app/node_modules/@tailwindcss/postcss/dist/index.js
+v-storefront-juniper010725-1  | - /app/.next/dev/build/chunks/[root-of-the-server]__51225daf._.js
+v-storefront-juniper010725-1  | - /app/.next/dev/build/chunks/[turbopack]_runtime.js
+v-storefront-juniper010725-1  | - /app/.next/dev/build/postcss.js
+v-storefront-juniper010725-1  |     [at Module._resolveFilename (node:internal/modules/cjs/loader:1207:15)]
+v-storefront-juniper010725-1  |     [at Module._load (node:internal/modules/cjs/loader:1038:27)]
+v-storefront-juniper010725-1  |     [at Module.require (node:internal/modules/cjs/loader:1289:19)]
+v-storefront-juniper010725-1  |     [at require (node:internal/modules/helpers:182:18)]
+v-storefront-juniper010725-1  |     [at Object.<anonymous> (/app/node_modules/lightningcss/node/index.js:22:22)]
+v-storefront-juniper010725-1  |     [at Module._compile (node:internal/modules/cjs/loader:1521:14)]
+v-storefront-juniper010725-1  |     [at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)]
+v-storefront-juniper010725-1  |     [at Module.load (node:internal/modules/cjs/loader:1266:32)]
+v-storefront-juniper010725-1  |     [at Module._load (node:internal/modules/cjs/loader:1091:12)]
+v-storefront-juniper010725-1  |     [at Module.require (node:internal/modules/cjs/loader:1289:19)]
+v-storefront-juniper010725-1  | 
+v-storefront-juniper010725-1  | Import trace:
+v-storefront-juniper010725-1  |   Client Component Browser:
+v-storefront-juniper010725-1  |     ./src/app/globals.css [Client Component Browser]
+v-storefront-juniper010725-1  |     ./src/app/layout.tsx [Server Component]
+v-storefront-juniper010725-1  | 
+v-storefront-juniper010725-1  | 
+v-storefront-juniper010725-1  | Error [ModuleBuildError]: ./src/app/globals.css
+v-storefront-juniper010725-1  | Error evaluating Node.js code
+v-storefront-juniper010725-1  | Error: Cannot find module '../lightningcss.linux-arm64-gnu.node'
+v-storefront-juniper010725-1  | Require stack:
+v-storefront-juniper010725-1  | - /app/node_modules/lightningcss/node/index.js
+v-storefront-juniper010725-1  | - /app/node_modules/@tailwindcss/node/dist/index.js
+v-storefront-juniper010725-1  | - /app/node_modules/@tailwindcss/postcss/dist/index.js
+v-storefront-juniper010725-1  | - /app/.next/dev/build/chunks/[root-of-the-server]__51225daf._.js
+v-storefront-juniper010725-1  | - /app/.next/dev/build/chunks/[turbopack]_runtime.js
+v-storefront-juniper010725-1  | - /app/.next/dev/build/postcss.js
+v-storefront-juniper010725-1  |     [at Module._resolveFilename (node:internal/modules/cjs/loader:1207:15)]
+v-storefront-juniper010725-1  |     [at Module._load (node:internal/modules/cjs/loader:1038:27)]
+v-storefront-juniper010725-1  |     [at Module.require (node:internal/modules/cjs/loader:1289:19)]
+v-storefront-juniper010725-1  |     [at require (node:internal/modules/helpers:182:18)]
+v-storefront-juniper010725-1  |     [at Object.<anonymous> (/app/node_modules/lightningcss/node/index.js:22:22)]
+v-storefront-juniper010725-1  |     [at Module._compile (node:internal/modules/cjs/loader:1521:14)]
+v-storefront-juniper010725-1  |     [at Module._extensions..js (node:internal/modules/cjs/loader:1623:10)]
+v-storefront-juniper010725-1  |     [at Module.load (node:internal/modules/cjs/loader:1266:32)]
+v-storefront-juniper010725-1  |     [at Module._load (node:internal/modules/cjs/loader:1091:12)]
+v-storefront-juniper010725-1  |     [at Module.require (node:internal/modules/cjs/loader:1289:19)]
+v-storefront-juniper010725-1  | 
+v-storefront-juniper010725-1  | Import trace:
+v-storefront-juniper010725-1  |   Client Component Browser:
+v-storefront-juniper010725-1  |     ./src/app/globals.css [Client Component Browser]
+v-storefront-juniper010725-1  |     ./src/app/layout.tsx [Server Component]
+v-storefront-juniper010725-1  | 
+v-storefront-juniper010725-1  | 
+v-storefront-juniper010725-1  |     at ignore-listed frames
+v-storefront-juniper010725-1  | Error: Incompatible React versions: The "react" and "react-dom" packages must have the exact same version. Instead got:
+v-storefront-juniper010725-1  |   - react:      19.2.1
+v-storefront-juniper010725-1  |   - react-dom:  19.2.0
+v-storefront-juniper010725-1  | Learn more: https://react.dev/warnings/version-mismatch
+v-storefront-juniper010725-1  |     at ignore-listed frames
