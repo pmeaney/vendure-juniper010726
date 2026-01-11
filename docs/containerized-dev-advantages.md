@@ -59,3 +59,5 @@ I like knowing that the project is the exact same, regardless of if the environm
 And that it's isolated, reproducible, portable, and easy to startup for a new developer.
 
 Plus, I saw a how much of a horror show local installation and local hosting can be, for a developer to begin development work at a new company, when a project grows in size and isn't fully containerized for all environments. 
+
+As a result, I typically containerize all my applications from the beginning.
