@@ -52,7 +52,7 @@ Need a new server? Need a new laptop? No worries-- it's easy to boot it back up 
 
 ## 5. Transferring the company to a new owner
 
-Some of my projects are for commercial purposes-- such as for Vendure: To create a company which sells products in its e-commerce store.
+Some of my projects are for commercial purposes-- such as my use case for using Vendure: To create a company which sells products in its e-commerce store.
 
 Transferring the application is more simple and more sellable, if it's packaged.
 
