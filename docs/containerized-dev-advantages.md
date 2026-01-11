@@ -45,3 +45,5 @@ No need for global npm packages, no conflict with other projects' npm or node ve
 
 ## 4. Reproducibility
 The Dockerfile is itself documentation of what the application needs to run. The Docker-compose.yml also documents the whole app's overall ecosystem setup regarding what is needed locally. Both items are committed to version control, making it easy to see what is needed for Prod and what is needed for Dev.
+
+Need a new server? Need a new laptop? No worries-- it's easy to boot it back up no matter the environment and bam-- you can quickly get to work.
