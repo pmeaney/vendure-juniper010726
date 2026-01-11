@@ -33,7 +33,7 @@ All nuts & bolts are included, and it can be started with just one command. That
 docker compose up
 ```
 
-Not like we faced at CDK Global: "Go to the confluence page. Follow the 10+ steps. If the steps need updating, update the doc. Let us know if you can get it all installed. If you can get it installed, start it up."
+Not like we faced at CDK Global: "Go to the confluence page. Follow the 10+ steps. If the steps need updating, update the doc. Let us know if you can get it all installed. If you can get it installed, start it up.  Next try to log in and see if it works."  At every step, a typical new developer faced errors.  It typically took a new developer a few days to get it working, interspersed with other onboarding work.  They usually had to ping other developers for help, simply to get it installed.
 
 But there were inevitably errors during install, startup, and initial attempts to get the development environment up and running. The whole process of getting the application installed & running was a significant distraction and an unnecessary series of steps, creating an obstacle for new developers. Which is why the leadership had my colleague work for about 3 months to dockerize the company's corporate application-- which over 15 years had grown into a $25 million dollar product.
 
