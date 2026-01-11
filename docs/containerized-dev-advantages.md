@@ -49,3 +49,13 @@ No need for global npm packages, no conflict with other projects' npm or node ve
 The Dockerfile is itself documentation of what the application needs to run. The Docker-compose.yml also documents the whole app's overall ecosystem setup regarding what is needed locally. Both items are committed to version control, making it easy to see what is needed for Prod and what is needed for Dev.
 
 Need a new server? Need a new laptop? No worries-- it's easy to boot it back up no matter the environment and bam-- you can quickly get to work.
+
+
+## Conclusion:
+
+Ultimately, I'm pretty fastidious.
+
+I like knowing that the project is the exact same, regardless of if the environment is local dev, remote prod, or remote testing. 
+And that it's isolated, reproducible, portable, and easy to startup for a new developer.
+
+Plus, I saw a how much of a horror show local installation and local hosting can be, for a developer to begin development work at a new company, when a project grows in size and isn't fully containerized for all environments. 
