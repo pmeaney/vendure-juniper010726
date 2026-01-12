@@ -18,7 +18,7 @@ TLDR of the advantages of containerizing the app for use with all environments (
 - Environment-agnostic
 - Isolated
 - Reproducible
-- Portable (more conducive to business exit-- that is, for the business using the framework to sell it onward to the new buyer, as a portable package)
+- Portable (more conducive to business exit-- that is, for the business app built (using the framework) to sell it their E-Commerce Business to the new buyer, as a portable package)
 
 # Advantages in detail:
 
