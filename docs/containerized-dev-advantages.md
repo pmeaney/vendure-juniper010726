@@ -13,6 +13,15 @@ From:
 
 Great question!
 
+TLDR of the advantages of containerizing the app for use with all environments (Local Dev & Testing, Remote Prod, Remote Testing):
+- It's easy to startup for a new-to-the-team developer
+- Environment-agnostic
+- Isolated
+- Reproducible
+- Portable (more conducive to business exit-- that is, for the business using the framework to sell it onward to the new buyer, as a portable package)
+
+# Advantages in detail:
+
 ## 1. Production <-> Dev environment parity.
 
 ### A. Both will run in the same OS (the container's Linux OS), use the same NodeJS version, the same DB version-- same everything.
@@ -23,7 +32,12 @@ For example, I hit a lightningcss binary issue: initially, I installed on my Mac
 **Solution:** Install the project from inside container on first startup, via conditional if statement in the Dockerfile (see [line 19](https://github.com/pmeaney/vendure-juniper010725/blob/main/my-shop-juniper/apps/storefront/Dockerfile.storefront#L19))
 
 ### C. My Engineering team at CDK Global ran into a big problem with our 15-year old ruby-based software
-It was difficult to onboard new developers, because the devs had to install several different dependencies, and in certain ways. And the installation step's documentation lagged behind newest versions of the various dependencies.
+For context: at my most recent company, CDK Global, which makes Auto Dealership Software (for Sales, Operations HR, and Managing Communications with Manufacturers), I joined as a Full Stack Dev & Later transitioned to DevOps
+
+It was difficult to onboard new developers into setting up the company's software product ready to start programming on.
+This is because the devs had to install several different dependencies, and in certain ways. 
+And the installation step's documentation lagged behind newest versions of the various dependencies.
+A big part of this main point is due to it being a 15 year old Ruby on Rails app, with some expired and abandon-ware dependencies.
 
 There was no simple turn-key command to allow a new developer joining the team to easily start-up the app and begin working on it. By keeping things containerized, the application is packaged up and runs on just one OS.
 
@@ -40,7 +54,7 @@ Not like we faced at CDK Global: "Go to the confluence page. Follow the 10+ step
 But there were inevitably errors during install, startup, and initial attempts to get the development environment up and running. The whole process of getting the application installed & running was a significant distraction and an unnecessary series of steps, creating an obstacle for new developers. Which is why the leadership had my colleague work for about 3 months to dockerize the company's corporate application-- which over 15 years had grown into a $25 million dollar product.
 
 ## 2. The same goes for Testing Environments
-Exact parity with Dev & Prod. So, it's easy to quickly deploy the app to Testing server, supply it with Test data, Run the app, and run tests against the mock (test) data.
+Exact parity with Dev & Prod. As a result, it's also easy to quickly deploy the app to Testing server, in order to supply it with Test data, Run the app, and run tests against the mock (test) data.
 
 ## 3. Clean isolation
 No need for global npm packages, no conflict with other projects' npm or node versions, no need to juggle multiple npm or node versions on the developer's laptop.
@@ -70,7 +84,7 @@ I'd rather say:
 Ultimately, I'm pretty fastidious.
 
 I like knowing that the project is the exact same, regardless of if the environment is local dev, remote prod, or remote testing. 
-And that it's isolated, reproducible, portable, and easy to startup for a new developer.
+And that it's easy to startup for a new-to-the-team developer, environment-agnostic, isolated, reproducible, portable.
 
 Plus, I saw a how much of a horror show local installation and local hosting can be, for a developer to begin development work at a new company, when a project grows in size and isn't fully containerized for all environments. 
 
