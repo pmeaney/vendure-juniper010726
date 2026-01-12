@@ -76,7 +76,7 @@ If I ever sell the company, I don't want to say:
 
 I'd rather say:
 
-"Running the app is easy-- just run this one command. Deploying it is also easy-- the deployment app is fully packaged up and is the same as what gets built locally."
+"Running the app is easy-- just run this one command. Deploying it is also easy-- Because the app is fully packaged up, you just setup your CICD process to build, publish, then pull, and run.  And the resulting app which is spun up is the same as what gets built locally on your dev's laptop, and in the testing environment."
 
 
 ## Conclusion:
