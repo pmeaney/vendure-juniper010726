@@ -1,12 +1,10 @@
-
-
 # Base stage - common dependencies
 FROM node:20-slim AS base
 WORKDIR /app
 
 # Dependencies stage (only for production build)
 FROM base AS deps
-COPY package.json package-lock.json* ./
+COPY package.json ./
 
 # Running fresh install & generating package-lock.json (at least once) from container, which is then shared back with macbook host.
 # on subsequent builds, it can be `npm ci`, since we'll already have the package-lock.json generated from the container the first time.
@@ -15,7 +13,9 @@ COPY package.json package-lock.json* ./
 # Copy if it exists (the * makes it optional)
 COPY package-lock.json* ./  
 
+# If package-lock.json exists, use npm ci (fast). Otherwise, use npm install (generates lockfile)
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+
 
 # Development stage (standalone - generates own lockfile)
 FROM base AS dev
@@ -30,7 +30,6 @@ COPY package-lock.json* ./
 
 # If package-lock.json exists, use npm ci (fast). Otherwise, use npm install (generates lockfile)
 RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
-
 
 COPY . .
 EXPOSE 3001

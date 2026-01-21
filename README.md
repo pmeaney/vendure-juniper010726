@@ -4,8 +4,32 @@ This project will be an initial draft of an Vendure ecommerce project. It's cont
 
 Run it locally:
 
-- Clone project.
-- run `docker compose -f docker-compose.local.yml up`
+- Clone project
+- Generate Linux-compatible lockfiles: `./generate-lockfiles.sh`
+  - **Why:** Creates `package-lock.json` files with Linux-compatible binaries (required for Docker containers). This ensures dependencies like `lightningcss`* work correctly in the containerized environment.
+  - **When to run:** 
+    - First time setting up the project (lockfiles don't exist in repo yet)
+    - After updating dependencies in `package.json`
+    - If you've deleted `package-lock.json` files
+- Start all services: `docker compose -f docker-compose.local.yml up --build`
+
+Access the application:
+- Storefront: http://localhost:3001
+- Admin/API: http://localhost:3000
+- Database: localhost:5432
+
+---
+
+**\*About platform-specific dependencies:** Some npm packages (like `lightningcss`) include native binaries compiled for specific operating systems. If you run `npm install` on macOS, it generates a lockfile pointing to macOS binaries. When Docker tries to use that lockfile in a Linux container, it fails with "module not found" errors.
+
+Without the `generate-lockfiles.sh` script (which is really just a helper to simplify the commands), the Dockerfiles would create a `package-lock.json` within the container during the **build phase**. However, this lockfile would only exist as an ephemeral layer in the Docker image - it wouldn't sync back to your host filesystem because Docker volumes are only mounted during the **run phase**, not the build phase. This means:
+- The lockfile exists temporarily in the built image
+- It never makes it to your Mac's filesystem
+- You can't commit it to version control
+- Every build regenerates it (slow)
+- Team members and CI/CD can't use a consistent lockfile
+
+The script solves this by running `npm install` in a temporary Linux container **at runtime** (not build time), with your project directory mounted as a volume. This way, the Linux-generated lockfile is written directly to your Mac, can be committed to git, and ensures everyone (local dev, teammates, CI/CD, production) uses identical dependencies.
 
 To clean up:
 - break out with control-c
