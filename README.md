@@ -5,12 +5,17 @@ This project will be an initial draft of an Vendure ecommerce project. It's cont
 ###
 
 
+# Vendure Project - Monorepo 
+
+This project is a Vendure ecommerce application. It's containerized (Docker) for easy CI/CD deployment and includes docker-compose for local development.
+
 ## Version Benchmarks
 
 **v1.0 - Local Development** ✅ (01/22/26)
 - Fully functional local development environment
 - Docker Compose setup working
 - Basic configuration complete
+- Payment integration: Stripe & PayPal test mode configured
 ```bash
 git tag -a v1.0-local-dev -m "Local development environment complete"
 git push origin v1.0-local-dev
@@ -21,19 +26,23 @@ git push origin v1.0-local-dev
 - ✅ Nginx Proxy Manager setup
 - ✅ SSH key-only authentication
 - ✅ Kernel hardening via sysctl
+- 📋 Apply for Stripe live account (1-3 business days)
+- 📋 Apply for PayPal Business account (immediate-5 days)
+- 📋 Prepare compliance docs (Privacy Policy, Terms of Service, Refund Policy)
 
 **v2.0 - Prototype Production** 🚧 (Target: TBD)
 - CI/CD pipeline functional
 - Production environment variables configured
 - Mid-level Server Security (Debian Linux server deployed via Terraform with basic security features: UFW, Fail2ban, SSH key auth only, kernel hardening)
 - Mid-level App Deployment Security (changed credentials, proper secrets management)
+- Payment providers: Awaiting live account approval / approved but using test mode
 - NOT hardened for public production use
 ```bash
 git tag -a v2.0-prototype-prod -m "Prototype production deployment complete"
 git push origin v2.0-prototype-prod
 ```
 
-**Between v2.0 and v3.0 - Security Hardening Roadmap:**
+**Between v2.0 and v3.0 - Security Hardening & Payment Activation:**
 
 *Application-Level (Vendure):*
 - 🔒 HardenPlugin configured (prevents GraphQL query attacks)
@@ -65,14 +74,31 @@ git push origin v2.0-prototype-prod
 *Compliance:*
 - 🔒 OWASP Top 10 compliance review
 
+*Payment Activation:*
+- 💳 Switch Stripe to live mode (production API keys)
+- 💳 Switch PayPal to live mode
+- 💳 Test live transactions ($1 test purchases)
+- 💳 Verify webhook handling in production
+- 💳 Monitor for payment issues
+
 **v3.0 - Production Hardened** 📋 (Target: TBD)
-- All v2.0 features plus additional security hardening
+- All v2.0 features plus complete security hardening
+- Payment providers: Live mode active and tested
 - Public-facing production ready
-- Full security audit
+- Full security audit complete
+- Ready to accept real customer orders
 ```bash
 git tag -a v3.0-production -m "Production-ready hardened deployment"
 git push origin v3.0-production
 ```
+
+**Post v3.0 - Business Operations:**
+- 🏷️ Catalog customization (products, categories, suppliers)
+- 🎨 Storefront UI customization
+- 📦 Shipping rules configuration
+- 🌎 Logistics setup & testing, regulatory analysis
+- 📸 Product photography workflow
+- 📱 Marketing and launch
 
 ## Run it locally:
 
