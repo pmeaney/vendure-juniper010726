@@ -16,6 +16,6 @@ Set up the following **repository secrets** in the repo.  Be sure that the ones 
 
 ## Setup of LINUX_SSH_PRIVATE_KEY_CICD
 
-1. Generate the SSH key on your dev laptop (not on the server): `ssh-keygen -t ed25519 -C "gha-cicdbot-01076" -f ~/.ssh/ed25519_for_gha_cicdbot_010726`
-   Note: the `-C` means "comment". It's a descriptive comment which appears at the end of the public key to help you remember what the key is for.  Using `010726` because it's the date associated with this project: Jan 07, 2026.
+The ssh key for the CICD Bot was already setup in the steps we followed to generate the server with terraform (see the `server011526-debian-ecom` project).  So, the CICD Bot's ssh public key is already on the server.  The private key is on the developer's laptop (and be sure the private key is in 1password too! The public key can be generated from the private key, so the private key is important to keep in 1password and to keep secret)
 
+So, we really just need to upload the private key to the github repo. From there, Github Actions will create a temporary server which interacts with ours to deploy the app containers-- it interacts with out server by ssh-ing into it for the container deployments.
