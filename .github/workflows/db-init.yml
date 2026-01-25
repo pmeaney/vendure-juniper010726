@@ -85,6 +85,8 @@ jobs:
           # Create temp directory and env file
           ssh prod "mkdir -p ~/vendure-db-temp"
           ssh prod "echo '$POSTGRES_ENV' > ~/vendure-db-temp/postgres.env"
+          # Debug: show env file contents
+          ssh prod "cat ~/vendure-db-temp/postgres.env"
 
           # Create Docker network
           ssh prod "docker network ls --filter name=vendure-network -q | grep -q . || docker network create vendure-network"
