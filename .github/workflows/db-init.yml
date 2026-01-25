@@ -25,6 +25,7 @@ on:
 
 jobs:
   check-db:
+    environment: production
     runs-on: ubuntu-latest
     outputs:
       db_needs_deploy: ${{ steps.check.outputs.db_needs_deploy }}
