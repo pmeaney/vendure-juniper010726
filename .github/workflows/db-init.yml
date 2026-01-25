@@ -1,0 +1,118 @@
+# .github/workflows/db-init.yml
+# Purpose:
+# The intention is to only deploy the database once-- When the server is first setup.
+# After that, we don't want to mess with it:
+# So, if it exists-- Just move on.
+# If it doesn't exist, create it.
+
+name: Database Init
+
+on:
+  workflow_call:
+    secrets:
+      LINUX_SSH_PRIVATE_KEY_CICD:
+        required: true
+      LINUX_BOTCICDGHA_USERNAME:
+        required: true
+      LINUX_SERVER_IPADDRESS:
+        required: true
+      POSTGRES__SECRET_ENV_FILE:
+        required: true
+    outputs:
+      db_needs_deploy:
+        description: "Whether DB was deployed"
+        value: ${{ jobs.check-db.outputs.db_needs_deploy }}
+
+jobs:
+  check-db:
+    runs-on: ubuntu-latest
+    outputs:
+       db_needs_deploy: ${{ steps.check.outputs.db_needs_deploy }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check if DB exists
+        id: check
+        env:
+          SSH_KEY: ${{ secrets.LINUX_SSH_PRIVATE_KEY_CICD }}
+          SSH_USER: ${{ secrets.LINUX_BOTCICDGHA_USERNAME }}
+          SERVER_IP: ${{ secrets.LINUX_SERVER_IPADDRESS }}
+        run: |
+          # Setup SSH
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          cat >>~/.ssh/config <<END
+          Host prod
+            HostName $SERVER_IP
+            User $SSH_USER
+            IdentityFile ~/.ssh/id_ed25519
+            StrictHostKeyChecking no
+          END
+
+          # Check if container exists
+          CONTAINER_EXISTS=$(ssh prod "docker ps -a --format '{{.Names}}' | grep -q '^vendure-db-juniper010726$' && echo 'true' || echo 'false'")
+
+          if [ "$CONTAINER_EXISTS" = "false" ]; then
+            echo "⚠️ Database container not found, will create it"
+            echo "db_needs_deploy=true" >> $GITHUB_OUTPUT
+          else
+            echo "✅ Database container exists"
+            echo "db_needs_deploy=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Deploy DB container
+        if: steps.check.outputs.db_needs_deploy == 'true'
+        env:
+          SSH_KEY: ${{ secrets.LINUX_SSH_PRIVATE_KEY_CICD }}
+          SSH_USER: ${{ secrets.LINUX_BOTCICDGHA_USERNAME }}
+          SERVER_IP: ${{ secrets.LINUX_SERVER_IPADDRESS }}
+          POSTGRES_ENV: ${{ secrets.POSTGRES__SECRET_ENV_FILE }}
+        run: |
+          # Setup SSH
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          cat >>~/.ssh/config <<END
+          Host prod
+            HostName $SERVER_IP
+            User $SSH_USER
+            IdentityFile ~/.ssh/id_ed25519
+            StrictHostKeyChecking no
+          END
+
+          # Create temp directory and env file
+          ssh prod "mkdir -p ~/vendure-db-temp"
+          ssh prod "echo '$POSTGRES_ENV' > ~/vendure-db-temp/postgres.env"
+
+          # Create Docker network
+          ssh prod "docker network ls --filter name=vendure-network -q | grep -q . || docker network create vendure-network"
+
+          # Create volumes
+          ssh prod "docker volume create vendure-db-data 2>/dev/null || true"
+          ssh prod "docker volume create vendure-db-init 2>/dev/null || true"
+
+          # Run container
+          ssh prod "\
+          docker run -d \
+            --name vendure-db-juniper010726 \
+            --network vendure-network \
+            --network-alias vendure-database \
+            --env-file ~/vendure-db-temp/postgres.env \
+            -p 5432:5432 \
+            -v vendure-db-data:/var/lib/postgresql/data \
+            -v vendure-db-init:/docker-entrypoint-initdb.d \
+            postgres:17"
+
+          # Cleanup
+          ssh prod "rm -rf ~/vendure-db-temp"
+
+          # Verify
+          CONTAINER_STATUS=$(ssh prod "docker ps -f name=vendure-db-juniper010726 --format '{{.Status}}'")
+          if [ -n "$CONTAINER_STATUS" ]; then
+            echo "✅ Database container running"
+          else
+            echo "❌ Failed to start database"
+            exit 1
+          fi

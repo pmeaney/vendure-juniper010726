@@ -15,7 +15,7 @@ postgres_defaults: |
 
 # these items are the same for Vendure Server & Vendure Worker
 vendure_srv_wrk_defaults: |
-  APP_ENV=dev
+  APP_ENV=prod
   PORT=3000
   COOKIE_SECRET=U74rfhaXFCbbqzOB2kPtdg
   SUPERADMIN_USERNAME=superadmin

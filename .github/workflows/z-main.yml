@@ -1,0 +1,158 @@
+# .github/workflows/main.yml
+name: Vendure Deployment Pipeline
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  # Database setup/check
+  database:
+    uses: ./.github/workflows/db-init.yml
+    permissions:
+      contents: read
+    secrets:
+      LINUX_SSH_PRIVATE_KEY_CICD: ${{ secrets.LINUX_SSH_PRIVATE_KEY_CICD }}
+      LINUX_BOTCICDGHA_USERNAME: ${{ secrets.LINUX_BOTCICDGHA_USERNAME }}
+      LINUX_SERVER_IPADDRESS: ${{ secrets.LINUX_SERVER_IPADDRESS }}
+      POSTGRES__SECRET_ENV_FILE: ${{ secrets.POSTGRES__SECRET_ENV_FILE }}
+
+  # Server deployment (depends on DB)
+  # server:
+  #   needs: database
+  #   uses: ./.github/workflows/server-deploy.yml
+  #   permissions:
+  #     contents: write
+  #     actions: write
+  #   secrets:
+  #     LINUX_SSH_PRIVATE_KEY_CICD: ${{ secrets.LINUX_SSH_PRIVATE_KEY_CICD }}
+  #     LINUX_BOTCICDGHA_USERNAME: ${{ secrets.LINUX_BOTCICDGHA_USERNAME }}
+  #     LINUX_SERVER_IPADDRESS: ${{ secrets.LINUX_SERVER_IPADDRESS }}
+  #     GHPAT_AS_CICD_SECRET: ${{ secrets.GHPATCICD_VendureRepo_010726 }}
+  #     SRV_WRK__SECRET_ENV_FILE: ${{ secrets.SRV_WRK__SECRET_ENV_FILE }}
+
+  # # Worker deployment (depends on Server)
+  # worker:
+  #   needs: server
+  #   uses: ./.github/workflows/worker-deploy.yml
+  #   permissions:
+  #     contents: write
+  #     actions: write
+  #   secrets:
+  #     LINUX_SSH_PRIVATE_KEY_CICD: ${{ secrets.LINUX_SSH_PRIVATE_KEY_CICD }}
+  #     LINUX_BOTCICDGHA_USERNAME: ${{ secrets.LINUX_BOTCICDGHA_USERNAME }}
+  #     LINUX_SERVER_IPADDRESS: ${{ secrets.LINUX_SERVER_IPADDRESS }}
+  #     GHPAT_AS_CICD_SECRET: ${{ secrets.GHPATCICD_VendureRepo_010726 }}
+  #     SRV_WRK__SECRET_ENV_FILE: ${{ secrets.SRV_WRK__SECRET_ENV_FILE }}
+
+  # # Storefront deployment (depends on Worker)
+  # storefront:
+  #   needs: worker
+  #   uses: ./.github/workflows/storefront-deploy.yml
+  #   permissions:
+  #     contents: write
+  #     actions: write
+  #   secrets:
+  #     LINUX_SSH_PRIVATE_KEY_CICD: ${{ secrets.LINUX_SSH_PRIVATE_KEY_CICD }}
+  #     LINUX_BOTCICDGHA_USERNAME: ${{ secrets.LINUX_BOTCICDGHA_USERNAME }}
+  #     LINUX_SERVER_IPADDRESS: ${{ secrets.LINUX_SERVER_IPADDRESS }}
+  #     GHPAT_AS_CICD_SECRET: ${{ secrets.GHPATCICD_VendureRepo_010726 }}
+  #     STOREFRONT__SECRET_ENV_FILE: ${{ secrets.STOREFRONT__SECRET_ENV_FILE }}
+
+  # Deployment summary
+  summary:
+    needs: [database] # storefront, server, worker]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download deployment markers
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          pattern: '*-last-deployed-commit'
+          path: ./deployment-markers
+          merge-multiple: true
+
+      - name: Create Deployment Summary
+        run: |
+          # Current commit info
+          CURRENT_COMMIT=$(git rev-parse HEAD)
+          CURRENT_COMMIT_SHORT=$(git rev-parse --short HEAD)
+          CURRENT_COMMIT_DATE=$(git show -s --format=%ci $CURRENT_COMMIT)
+          CURRENT_COMMIT_MESSAGE=$(git show -s --format=%s $CURRENT_COMMIT)
+
+          echo "# 📊 Deployment Summary - Commit ${CURRENT_COMMIT_SHORT}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Info | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Commit** | \`${CURRENT_COMMIT_SHORT}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Date** | ${CURRENT_COMMIT_DATE} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Message** | ${CURRENT_COMMIT_MESSAGE} |" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Database
+          echo "## 💾 Database (vendure-db-juniper010726)" >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ needs.database.outputs.db_needs_deploy }}" == "true" ]]; then
+            echo "✅ **Created** - Database container was newly created" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "ℹ️ **Exists** - Database container already present" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Function to show service info
+          show_service() {
+            local service=$1
+            local icon=$2
+            local container=$3
+            local dir=$4
+            
+            echo "## ${icon} ${service} (${container})" >> $GITHUB_STEP_SUMMARY
+            
+            # Get last deployed info
+            if [ -f "./deployment-markers/${service}-last-commit.txt" ]; then
+              LAST_COMMIT=$(cat ./deployment-markers/${service}-last-commit.txt)
+              LAST_SHORT=$(git rev-parse --short $LAST_COMMIT)
+              LAST_DATE=$(git show -s --format=%ci $LAST_COMMIT)
+              CHANGES=$(git diff --name-only $LAST_COMMIT $CURRENT_COMMIT -- ./${dir} | wc -l)
+            else
+              LAST_SHORT="N/A"
+              LAST_DATE="First deployment"
+              CHANGES="N/A"
+            fi
+            
+            echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+            echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+            echo "| **Last deployed** | \`${LAST_SHORT}\` (${LAST_DATE}) |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Changes detected** | ${{ needs.${service}.outputs.had_changes }} |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Files changed** | ${CHANGES} |" >> $GITHUB_STEP_SUMMARY
+            echo "| **Action taken** | ${{ needs.${service}.outputs.action_taken }} |" >> $GITHUB_STEP_SUMMARY
+            
+            # Show changed files if deployed
+            if [[ "${{ needs.${service}.outputs.had_changes }}" == "true" ]]; then
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "**Changed files:**" >> $GITHUB_STEP_SUMMARY
+              echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+              if [ -f "./deployment-markers/${service}-last-commit.txt" ]; then
+                git diff --name-only $LAST_COMMIT $CURRENT_COMMIT -- ./${dir} >> $GITHUB_STEP_SUMMARY
+              else
+                echo "First deployment - all files are new" >> $GITHUB_STEP_SUMMARY
+              fi
+              echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            fi
+            echo "" >> $GITHUB_STEP_SUMMARY
+          }
+
+          # Show each service
+          show_service "server" "🖥️" "vendure-server-juniper010726" "my-shop-juniper/apps/server"
+          show_service "worker" "⚙️" "vendure-worker-juniper010726" "my-shop-juniper/apps/server"
+          show_service "storefront" "🌐" "vendure-storefront-juniper010726" "my-shop-juniper/apps/storefront"
