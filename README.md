@@ -1,12 +1,5 @@
 # Vendure Project - Monorepo 
 
-This project will be an initial draft of an Vendure ecommerce project. It's containerized (docker) for easy CICD deployment.  It has a docker-compose file for easy local development spin-up.
-
-###
-
-
-# Vendure Project - Monorepo 
-
 This project is a Vendure ecommerce application. It's containerized (Docker) for easy CI/CD deployment and includes docker-compose for local development.
 
 ## Version Benchmarks
@@ -30,7 +23,7 @@ git push origin v1.0-local-dev
 - 📋 Apply for PayPal Business account (immediate-5 days)
 - 📋 Prepare compliance docs (Privacy Policy, Terms of Service, Refund Policy)
 
-**v2.0 - Prototype Production** 🚧 (Target: TBD)
+**v2.0 - Prototype Production** 🚧 
 - CI/CD pipeline functional
 - Production environment variables configured
 - Mid-level Server Security (Debian Linux server deployed via Terraform with basic security features: UFW, Fail2ban, SSH key auth only, kernel hardening)
@@ -64,7 +57,7 @@ git push origin v2.0-prototype-prod
 - 💳 Test live transactions ($1 test purchases)
 - 💳 Verify webhook handling in production
 
-**v3.0 - Production Ready** 📋 (Target: TBD)
+**v3.0 - Production Ready** 📋 
 - All v2.0 features plus essential security hardening
 - Payment providers: Live mode active and tested
 - Public-facing production ready

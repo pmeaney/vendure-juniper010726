@@ -29,7 +29,7 @@ Set up the following **repository secrets** in the repo.  Be sure that the ones 
      - Be sure to set new, unique values for SUPERADMIN_USERNAME, SUPERADMIN_PASSWORD, and that the DB_ items match the ones from the `POSTGRES__SECRET_ENV_FILE`.  And set APP_ENV to 'prod' instead of 'dev'.  For more info: https://docs.vendure.io/guides/deployment/production-configuration/ (note the use of 'prod' as the env name, in the info regarding the hardening plugin-- which is why I assume it should be 'prod' and not 'production'.)
    - `LINUX_BOTCICDGHA_USERNAME`: Username for SSH access
    - `LINUX_SERVER_IPADDRESS`: IP address of deployment server
-   - `GHPATCICD_RPOWKFLO_WRDPCKGS`: GitHub Personal Access Token with repository, workflow, and package read/write permissions
+   - `GHPATCICD_VendureRepo_010726`: GitHub Personal Access Token with repository, workflow, and package read/write permissions.  (Workflow-- because we'll have a Main workflow and subworkflows.  Main workflow will output values from the subworkflows into a CICD summary screen.  The Main workflow basically orchestrates its sub workflows)
    - `LINUX_SSH_PRIVATE_KEY_CICD`: SSH key for deployment server access.  See below for steps to set this up.
 
 ## Setup of LINUX_SSH_PRIVATE_KEY_CICD
