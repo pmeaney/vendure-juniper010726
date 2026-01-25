@@ -65,7 +65,7 @@ jobs:
 
   # Deployment summary
   summary:
-    needs: [database] # storefront, server, worker]
+    needs: [database, server] # storefront, server, worker]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -109,39 +109,39 @@ jobs:
           fi
           echo "" >> $GITHUB_STEP_SUMMARY
 
-        # # Server
-        # echo "## 🖥️ Server (vendure-server-juniper010726)" >> $GITHUB_STEP_SUMMARY
-        
-        # if [ -f "./deployment-markers/server-last-commit.txt" ]; then
-        #   LAST_COMMIT=$(cat ./deployment-markers/server-last-commit.txt)
-        #   LAST_SHORT=$(git rev-parse --short $LAST_COMMIT)
-        #   LAST_DATE=$(git show -s --format=%ci $LAST_COMMIT)
-        #   CHANGES=$(git diff --name-only $LAST_COMMIT $CURRENT_COMMIT -- ./my-shop-juniper/apps/server | wc -l)
-        # else
-        #   LAST_SHORT="N/A"
-        #   LAST_DATE="First deployment"
-        #   CHANGES="N/A"
-        # fi
-        
-        # echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
-        # echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
-        # echo "| **Last deployed** | \`${LAST_SHORT}\` (${LAST_DATE}) |" >> $GITHUB_STEP_SUMMARY
-        # echo "| **Changes detected** | ${{ needs.server.outputs.had_changes }} |" >> $GITHUB_STEP_SUMMARY
-        # echo "| **Files changed** | ${CHANGES} |" >> $GITHUB_STEP_SUMMARY
-        # echo "| **Action taken** | ${{ needs.server.outputs.action_taken }} |" >> $GITHUB_STEP_SUMMARY
-        
-        # if [[ "${{ needs.server.outputs.had_changes }}" == "true" ]]; then
-        #   echo "" >> $GITHUB_STEP_SUMMARY
-        #   echo "**Changed files:**" >> $GITHUB_STEP_SUMMARY
-        #   echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-        #   if [ -f "./deployment-markers/server-last-commit.txt" ]; then
-        #     git diff --name-only $LAST_COMMIT $CURRENT_COMMIT -- ./my-shop-juniper/apps/server >> $GITHUB_STEP_SUMMARY
-        #   else
-        #     echo "First deployment - all files are new" >> $GITHUB_STEP_SUMMARY
-        #   fi
-        #   echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-        # fi
-        # echo "" >> $GITHUB_STEP_SUMMARY
+          # Server
+          echo "## 🖥️ Server (vendure-server-juniper010726)" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f "./deployment-markers/server-last-commit.txt" ]; then
+            LAST_COMMIT=$(cat ./deployment-markers/server-last-commit.txt)
+            LAST_SHORT=$(git rev-parse --short $LAST_COMMIT)
+            LAST_DATE=$(git show -s --format=%ci $LAST_COMMIT)
+            CHANGES=$(git diff --name-only $LAST_COMMIT $CURRENT_COMMIT -- ./my-shop-juniper/apps/server | wc -l)
+          else
+            LAST_SHORT="N/A"
+            LAST_DATE="First deployment"
+            CHANGES="N/A"
+          fi
+          
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Last deployed** | \`${LAST_SHORT}\` (${LAST_DATE}) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Changes detected** | ${{ needs.server.outputs.had_changes }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Files changed** | ${CHANGES} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Action taken** | ${{ needs.server.outputs.action_taken }} |" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ "${{ needs.server.outputs.had_changes }}" == "true" ]]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Changed files:**" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            if [ -f "./deployment-markers/server-last-commit.txt" ]; then
+              git diff --name-only $LAST_COMMIT $CURRENT_COMMIT -- ./my-shop-juniper/apps/server >> $GITHUB_STEP_SUMMARY
+            else
+              echo "First deployment - all files are new" >> $GITHUB_STEP_SUMMARY
+            fi
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
 
         # # Worker
         # echo "## ⚙️ Worker (vendure-worker-juniper010726)" >> $GITHUB_STEP_SUMMARY
