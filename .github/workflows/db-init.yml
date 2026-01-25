@@ -5,8 +5,6 @@
 # So, if it exists-- Just move on.
 # If it doesn't exist, create it.
 
-# test
-
 name: Database Init
 
 on:
@@ -29,7 +27,7 @@ jobs:
   check-db:
     runs-on: ubuntu-latest
     outputs:
-       db_needs_deploy: ${{ steps.check.outputs.db_needs_deploy }}
+      db_needs_deploy: ${{ steps.check.outputs.db_needs_deploy }}
 
     steps:
       - uses: actions/checkout@v4
@@ -41,6 +39,11 @@ jobs:
           SSH_USER: ${{ secrets.LINUX_BOTCICDGHA_USERNAME }}
           SERVER_IP: ${{ secrets.LINUX_SERVER_IPADDRESS }}
         run: |
+          # Debug environment variables
+          echo "Debug - Checking if variables are set:"
+          echo "SSH_USER is set: $(if [ -n "$SSH_USER" ]; then echo "YES"; else echo "NO"; fi)"
+          echo "SERVER_IP is set: $(if [ -n "$SERVER_IP" ]; then echo "YES"; else echo "NO"; fi)"
+
           # Setup SSH
           mkdir -p ~/.ssh/
           echo "$SSH_KEY" > ~/.ssh/id_ed25519
@@ -72,6 +75,11 @@ jobs:
           SERVER_IP: ${{ secrets.LINUX_SERVER_IPADDRESS }}
           POSTGRES_ENV: ${{ secrets.POSTGRES__SECRET_ENV_FILE }}
         run: |
+          # Debug environment variables
+          echo "Debug - Checking if variables are set:"
+          echo "SSH_USER is set: $(if [ -n "$SSH_USER" ]; then echo "YES"; else echo "NO"; fi)"
+          echo "SERVER_IP is set: $(if [ -n "$SERVER_IP" ]; then echo "YES"; else echo "NO"; fi)"
+
           # Setup SSH
           mkdir -p ~/.ssh/
           echo "$SSH_KEY" > ~/.ssh/id_ed25519
@@ -84,39 +92,56 @@ jobs:
             StrictHostKeyChecking no
           END
 
-          # Create temp directory and env file
-          ssh prod "mkdir -p ~/vendure-db-temp"
-          ssh prod "echo '$POSTGRES_ENV' > ~/vendure-db-temp/postgres.env"
-          # Debug: show env file contents
-          ssh prod "cat ~/vendure-db-temp/postgres.env"
+          # Create directory on remote server for the temporary prod env file
+          ssh prod "mkdir -p ~/vendure-db-juniper010726"
 
-          # Create Docker network
+          # Create the temporary prod env file directly on the remote server
+          # Echo the env var content with proper quoting for multiline preservation
+          ssh prod "echo '$POSTGRES_ENV' > ~/vendure-db-juniper010726/postgres-env-prod.env"
+
+          # Debug: Verify env file was created and show contents
+          echo "=== Verifying environment file on remote server ==="
+          ssh prod "ls -la ~/vendure-db-juniper010726/ && echo '--- Postgres env file contents ---' && cat ~/vendure-db-juniper010726/postgres-env-prod.env"
+
+          # Create Docker network if it doesn't exist
           ssh prod "docker network ls --filter name=vendure-network -q | grep -q . || docker network create vendure-network"
 
-          # Create volumes
-          ssh prod "docker volume create vendure-db-data 2>/dev/null || true"
-          ssh prod "docker volume create vendure-db-init 2>/dev/null || true"
+          # Create volume if it doesn't exist
+          ssh prod "docker volume inspect vendure-db-juniper010726-data >/dev/null 2>&1 || docker volume create vendure-db-juniper010726-data"
 
-          # Run container
+          # Run the container on the remote server
           ssh prod "\
           docker run -d \
             --name vendure-db-juniper010726 \
             --network vendure-network \
             --network-alias vendure-database \
-            --env-file ~/vendure-db-temp/postgres.env \
+            --env-file ~/vendure-db-juniper010726/postgres-env-prod.env \
             -p 5432:5432 \
-            -v vendure-db-data:/var/lib/postgresql/data \
-            -v vendure-db-init:/docker-entrypoint-initdb.d \
+            -v vendure-db-juniper010726-data:/var/lib/postgresql/data \
             postgres:17"
 
-          # Cleanup
-          ssh prod "rm -rf ~/vendure-db-temp"
+          # Cleanup env file
+          ssh prod "rm ~/vendure-db-juniper010726/postgres-env-prod.env"
 
-          # Verify
+          # Verify the container is running in a separate command
           CONTAINER_STATUS=$(ssh prod "docker ps -f name=vendure-db-juniper010726 --format '{{.Status}}'")
           if [ -n "$CONTAINER_STATUS" ]; then
-            echo "✅ Database container running"
+            echo "✅ Database container successfully created and running"
+            echo "DB_CREATED=true" >> $GITHUB_ENV
           else
-            echo "❌ Failed to start database"
+            echo "❌ Failed to create database container"
+            echo "=== Container logs ==="
+            ssh prod "docker logs vendure-db-juniper010726"
             exit 1
+          fi
+
+      # Final status output
+      - name: Status Report
+        run: |
+          if [[ "${{ steps.check.outputs.db_needs_deploy }}" == "false" ]]; then
+            echo "Database container already existed"
+          elif [[ "$DB_CREATED" == "true" ]]; then
+            echo "Database container was created successfully"
+          else
+            echo "Failed to verify database status"
           fi
