@@ -71,6 +71,8 @@ COPY --from=builder --chown=vendure:nodejs /usr/src/app/package.json ./package.j
 COPY --from=builder --chown=vendure:nodejs /usr/src/app/static ./static
 COPY --from=builder --chown=vendure:nodejs /usr/src/app/src/migrations ./src/migrations
 
+COPY --chown=vendure:nodejs env-defaults.env .env
+
 USER vendure
 
 EXPOSE 3000

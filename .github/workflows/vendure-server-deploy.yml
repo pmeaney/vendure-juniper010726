@@ -272,10 +272,11 @@ jobs:
         run: |
           echo "Building and publishing server Docker image..."
 
-          # Build the Vendure Server Docker image with env file
+          # Build the Vendure Server Docker image with default env file
           docker build \
             -f my-shop-juniper/apps/server/Dockerfile.server \
             --target prod \
+            --build-arg ENV_FILE=env-defaults.env
             --build-arg NODE_ENV=production \
             --no-cache \
             -t ghcr.io/${{ github.actor }}/vendure-server-juniper010726:latest \

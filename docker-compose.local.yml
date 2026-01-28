@@ -30,7 +30,7 @@ services:
       - server-node-modules:/usr/src/app/node_modules  # ← Named
       - server-dist:/usr/src/app/dist                   # ← Named
     env_file:
-      - ./my-shop-juniper/apps/server/.env.local.example.srv-wrk
+      - ./my-shop-juniper/apps/server/.env
 
   v-wrk-juniper010726:
     build:
@@ -48,7 +48,7 @@ services:
       - worker-node-modules:/usr/src/app/node_modules  # ← Named
       - worker-dist:/usr/src/app/dist                   # ← Named
     env_file:
-      - ./my-shop-juniper/apps/server/.env.local.example.srv-wrk
+      - ./my-shop-juniper/apps/server/.env
 
   v-storefront-juniper010726:
     build:
