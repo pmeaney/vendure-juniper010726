@@ -114,3 +114,155 @@ Note how I enter these values when prompted:
 │
 └  ✅ Done!
 ```
+
+
+## Migration Runtime Gotcha: `.ts` vs `.js` in Production
+
+Vendure migrations are authored in **TypeScript** (e.g. `1769621898632-InitialMigration.ts`), but **they must never be executed as TypeScript at runtime in production**.
+
+During the build step, all migration files are compiled from:
+
+```
+src/migrations/*.ts
+```
+
+into:
+
+```
+dist/migrations/*.js
+```
+
+When the Vendure server starts in production (Docker, CICD, remote server), it runs using **plain Node.js**, *not* `ts-node`. As a result:
+
+- Node **cannot execute `.ts` files**
+- TypeORM will throw cryptic errors like:
+  ```
+  SyntaxError: Unexpected strict mode reserved word
+  ```
+  if it attempts to load TypeScript at runtime
+
+### The Subtle Trap
+
+It is tempting (and commonly documented) to configure migrations like this:
+
+```ts
+migrations: [path.join(__dirname, './migrations/*.+(js|ts)')],
+```
+
+However, **this causes TypeORM to attempt to load `.ts` files in production**, even when running compiled code from `dist/`. As soon as TypeORM tries to `require()` a `.ts` file, Node crashes because TypeScript syntax (`interface`, decorators, etc.) is invalid JavaScript.
+
+### The Correct Production Configuration
+
+In production, migrations must point **only to compiled JavaScript**:
+
+```ts
+migrations: [path.join(__dirname, './migrations/*.js')],
+```
+
+This ensures that:
+- TypeORM only loads compiled artifacts
+- Node never attempts to execute TypeScript
+- Vendure can safely auto-run migrations on startup
+
+### Key Takeaway
+
+- **TypeScript migrations are build-time artifacts**
+- **JavaScript migrations are runtime artifacts**
+- Production Vendure containers must be configured to load **only `.js` migrations**
+- Including `.ts` in migration globs is a common but dangerous footgun
+
+This distinction is easy to miss because:
+- The Vendure CLI generates `.ts` migrations
+- TypeORM examples often show `(js|ts)`
+- CI builds succeed (the error only appears at runtime)
+
+Once this is understood, migration behavior becomes predictable and stable across local, CI, and production environments.
+
+---
+
+## Local vs Production Config Summary
+
+Vendure behaves very differently depending on **how it is executed**:
+
+- **Local development & CLI tooling** → runs with TypeScript (`ts-node`)
+- **Production / Docker / CICD** → runs compiled JavaScript via Node.js
+
+Because of this, configuration must respect **when TypeScript exists** vs **when only JavaScript exists**.
+
+### Local Development (CLI, `npx vendure migrate`)
+
+**Execution context**
+- Runs on the host machine
+- Uses `ts-node`
+- Reads directly from `src/`
+- Can execute `.ts` files safely
+
+**Typical use cases**
+- Generating migrations
+- Running migrations manually
+- Rapid iteration on schema changes
+
+**Key characteristics**
+- `vendure-config.ts` is loaded directly
+- `.ts` migrations are expected and valid
+- Database host is usually `localhost`
+- Only the DB container needs to be running
+
+### Production (Docker, CICD, Remote Server)
+
+**Execution context**
+- Runs inside Linux containers
+- Uses plain Node.js (no `ts-node`)
+- Executes compiled output from `dist/`
+- Cannot execute TypeScript
+
+**Typical use cases**
+- Automatic migrations on startup
+- First-time schema creation
+- Ongoing schema evolution
+
+**Key characteristics**
+- Entry point is `dist/index.js`
+- `vendure-config.js` lives in `dist/`
+- Only compiled `.js` files may be loaded
+- Database host is a Docker network alias (e.g. `vendure-database`)
+
+**Critical rules**
+- ❌ Never load `.ts` migrations at runtime
+- ❌ Never include `(js|ts)` in production migration globs
+- ✅ Migrations must point to `dist/migrations/*.js`
+- ✅ `npm ci` + `npm run build` must run before startup
+
+### Configuration Pattern to Follow
+
+**Author in TypeScript, run in JavaScript**
+
+| Concern | Local | Production |
+|------|------|-----------|
+| Source files | `src/**/*.ts` | `dist/**/*.js` |
+| Migration files | `.ts` | `.js` |
+| Execution engine | `ts-node` | `node` |
+| Docker required | DB only | All services |
+| DB host | `localhost` | Docker network alias |
+
+### Mental Model (Important)
+
+> **Vendure migrations are written in TypeScript, but executed in JavaScript.**
+
+If Node ever tries to execute a `.ts` file in production, the configuration is wrong — even if the build succeeds.
+
+### Common Failure Mode
+
+**Symptom**
+```
+SyntaxError: Unexpected strict mode reserved word
+```
+
+**Root cause**
+- TypeORM attempted to load a `.ts` migration at runtime
+
+**Fix**
+- Restrict migration paths to `.js` in production
+- Ensure `dist/migrations` exists and contains compiled files
+
+This separation of concerns — **TypeScript for authorship, JavaScript for execution** — is the single most important principle to keep Vendure migrations stable across local, CI, and production environments.
