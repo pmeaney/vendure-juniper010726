@@ -9,19 +9,8 @@ import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@ven
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
+import 'dotenv/config';
 import path from 'path';
-import 'dotenv/config'; // <-- default. imports .env but I prefer to give the .env file a descriptive name
-//  Leaving this in for reference... its when I was still considering keeping the descriptive name of the local env file.
-// For simplicity, decided to just use '.env' locally and in CICD
-// import dotenv from 'dotenv';
-// We use `.env.local.example.srv-wrk` for local dev.  in CICD deploy, env vars are placed in container's server dir /.env file
-// So, as long as our prod env vars are in a server's .env file, this should work in prod.
-// import fs from 'fs';
-// // Check which env file exists
-// const envFile = fs.existsSync('.env') 
-//   ? '.env' 
-//   : '.env.local.example.srv-wrk';
-// dotenv.config({ path: envFile });
 
 const IS_DEV = process.env.APP_ENV === 'dev';
 const serverPort = +process.env.PORT || 3000;
