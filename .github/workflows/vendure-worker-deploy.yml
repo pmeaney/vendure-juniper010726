@@ -1,5 +1,5 @@
-# .github/workflows/server-deploy.yml
-name: Server Deploy
+# .github/workflows/vendure-worker-deploy.yml
+name: Worker Deploy
 
 on:
   workflow_call:
@@ -37,7 +37,7 @@ jobs:
       actions: write
     outputs:
       changes_detected: ${{ steps.check-changes.outputs.changes }}
-      action: ${{ steps.step-deploy-server.outputs.action_taken || steps.no-deployment.outputs.action_taken }}
+      action: ${{ steps.step-deploy-worker.outputs.action_taken || steps.no-deployment.outputs.action_taken }}
       changed_files: ${{ steps.changed-files.outputs.files }}
       changed_files_count: ${{ steps.changed-files.outputs.count }}
 
@@ -60,18 +60,18 @@ jobs:
           mkdir -p ./deployment-markers
 
           # Try to download the artifact using the GitHub CLI
-          echo "Attempting to download latest server-last-deployed-commit artifact..."
-          gh run download --name server-last-deployed-commit --dir ./deployment-markers --repo ${{ github.repository }} || true
+          echo "Attempting to download latest worker-last-deployed-commit artifact..."
+          gh run download --name worker-last-deployed-commit --dir ./deployment-markers --repo ${{ github.repository }} || true
 
           # Check if the download was successful
-          if [ -f "./deployment-markers/server-last-commit.txt" ]; then
+          if [ -f "./deployment-markers/worker-last-commit.txt" ]; then
             echo "✅ Successfully downloaded previous deployment marker"
           else
             echo "⚠️ No previous deployment marker found or download failed"
           fi
 
-      # Check if the server container exists on the server
-      - name: Check if Server Container exists on server
+      # Check if the worker container exists on the server
+      - name: Check if Worker Container exists on server
         id: check-container-exists
         env:
           SSH_KEY: ${{ secrets.LINUX_SSH_PRIVATE_KEY_CICD }}
@@ -90,8 +90,8 @@ jobs:
             StrictHostKeyChecking no
           END
 
-          # Check if Server container exists (running or stopped)
-          CONTAINER_EXISTS=$(ssh prod "docker ps -a --format '{{.Names}}' | grep -q '^vendure-server-juniper010726$' && echo 'true' || echo 'false'")
+          # Check if Worker container exists (running or stopped)
+          CONTAINER_EXISTS=$(ssh prod "docker ps -a --format '{{.Names}}' | grep -q '^vendure-worker-juniper010726$' && echo 'true' || echo 'false'")
 
           echo "container_exists=$CONTAINER_EXISTS" >> $GITHUB_OUTPUT
           echo "Container exists: $CONTAINER_EXISTS"
@@ -100,9 +100,9 @@ jobs:
       - name: Get last deployed commit hash
         id: get-last-commit
         run: |
-          if [ -f "./deployment-markers/server-last-commit.txt" ]; then
-            LAST_COMMIT=$(cat ./deployment-markers/server-last-commit.txt)
-            echo "Last successfully deployed server commit: $LAST_COMMIT"
+          if [ -f "./deployment-markers/worker-last-commit.txt" ]; then
+            LAST_COMMIT=$(cat ./deployment-markers/worker-last-commit.txt)
+            echo "Last successfully deployed worker commit: $LAST_COMMIT"
             echo "last_commit=$LAST_COMMIT" >> $GITHUB_OUTPUT
           else
             # If no marker exists, get a commit far back enough to capture all changes
@@ -112,20 +112,21 @@ jobs:
             echo "last_commit=$LAST_COMMIT" >> $GITHUB_OUTPUT
           fi
 
-      - name: Check Server Directory Changes
+      # Check for changes in worker directory and make deployment decision
+      - name: Check Worker Directory Changes
         id: check-changes
         run: |
-          echo "=== Running Server Deployment Decision Model ==="
+          echo "=== Running Worker Deployment Decision Model ==="
 
           # STEP 1: Evaluate Container Status
           CONTAINER_EXISTS="${{ steps.check-container-exists.outputs.container_exists }}"
-          echo "Q1: Does Server container (vendure-server-juniper010726) exist? Answer: $CONTAINER_EXISTS"
+          echo "Q1: Does Worker container (vendure-worker-juniper010726) exist? Answer: $CONTAINER_EXISTS"
 
           # STEP 2: Evaluate Artifact Status
           ARTIFACT_EXISTS="false"
-          if [ -f "./deployment-markers/server-last-commit.txt" ]; then
+          if [ -f "./deployment-markers/worker-last-commit.txt" ]; then
             ARTIFACT_EXISTS="true"
-            LAST_COMMIT=$(cat ./deployment-markers/server-last-commit.txt)
+            LAST_COMMIT=$(cat ./deployment-markers/worker-last-commit.txt)
             LAST_COMMIT_SHORT=$(git rev-parse --short $LAST_COMMIT 2>/dev/null || echo "N/A")
             echo "Q2: Does deployment marker artifact exist? Answer: $ARTIFACT_EXISTS (Last commit: $LAST_COMMIT_SHORT)"
           else
@@ -165,7 +166,7 @@ jobs:
             echo "DECISION: Build and Deploy (Initial deployment - no container exists)"
             echo "changes=true" >> $GITHUB_OUTPUT
             echo "force_deploy_reason=Initial deployment - no container exists" >> $GITHUB_OUTPUT
-            git ls-files ./my-shop-juniper/apps/server > ./server-changed-files.txt
+            git ls-files ./my-shop-juniper/apps/server > ./worker-changed-files.txt
           elif [ "$CONTAINER_EXISTS" = "true" ] && [ "$ARTIFACT_EXISTS" = "true" ] && [ "$CHANGES_DETECTED" = "true" ]; then
             echo "| No                | Any              | Any               | Build & Deploy     | Initial deployment - no container exists |"
             echo "| Yes               | Yes              | Yes               | **Build & Deploy** | Code changes detected in my-shop-juniper/apps/server |"
@@ -174,7 +175,7 @@ jobs:
             echo ""
             echo "DECISION: Build and Deploy (Code changes detected in my-shop-juniper/apps/server)"
             echo "changes=true" >> $GITHUB_OUTPUT
-            echo "$CHANGED_FILES" > ./server-changed-files.txt
+            echo "$CHANGED_FILES" > ./worker-changed-files.txt
           elif [ "$CONTAINER_EXISTS" = "true" ] && [ "$ARTIFACT_EXISTS" = "true" ] && [ "$CHANGES_DETECTED" = "false" ]; then
             echo "| No                | Any              | Any               | Build & Deploy     | Initial deployment - no container exists |"
             echo "| Yes               | Yes              | Yes               | Build & Deploy     | Code changes detected in my-shop-juniper/apps/server |"
@@ -197,29 +198,31 @@ jobs:
           if [ "${{ steps.check-changes.outputs.changes }}" = "true" ]; then
             echo ""
             echo "Files to be deployed:"
-            cat ./server-changed-files.txt
+            cat ./worker-changed-files.txt
           fi
 
-      # Save changed files to an output
-      - name: Set changed files as output
-        if: steps.check-changes.outputs.changes == 'true'
+      # Store changed files list as output
+      - name: Store changed files list as output
         id: changed-files
+        if: steps.check-changes.outputs.changes == 'true'
         run: |
           # Use GitHub's multiline output syntax
           echo "files<<EOF" >> $GITHUB_OUTPUT
-          cat ./server-changed-files.txt >> $GITHUB_OUTPUT
+          cat ./worker-changed-files.txt >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
           # Count the number of changed files correctly
-          CHANGE_COUNT=$(cat ./server-changed-files.txt | wc -l | xargs)
+          CHANGE_COUNT=$(cat ./worker-changed-files.txt | wc -l | xargs)
           echo "count=$CHANGE_COUNT" >> $GITHUB_OUTPUT
 
-      - name: Install YQ
+      # Install yq for reading env defaults
+      - name: Install yq
         if: steps.check-changes.outputs.changes == 'true'
         run: |
           wget https://github.com/mikefarah/yq/releases/download/v4.34.1/yq_linux_amd64 -O /usr/local/bin/yq
           chmod +x /usr/local/bin/yq
 
+      # Load environment defaults
       - name: Load Environment Defaults
         if: steps.check-changes.outputs.changes == 'true'
         id: env-defaults
@@ -260,7 +263,7 @@ jobs:
           
           if [ -z "$DB_STATUS" ]; then
             echo "❌ Database container 'vendure-db-juniper010726' is not running"
-            echo "Cannot deploy server without database"
+            echo "Cannot deploy worker without database"
             exit 1
           fi
           
@@ -270,18 +273,18 @@ jobs:
         if: steps.check-changes.outputs.changes == 'true'
         id: build-publish
         run: |
-          echo "Building and publishing server Docker image..."
+          echo "Building and publishing worker Docker image..."
 
-          # Build the Vendure Server Docker image with default env file
+          # Build the Vendure Worker Docker image with default env file
           docker build \
-            -f my-shop-juniper/apps/server/Dockerfile.server \
+            -f my-shop-juniper/apps/server/Dockerfile.worker \
             --target prod \
             --no-cache \
-            -t ghcr.io/${{ github.actor }}/vendure-server-juniper010726:latest \
+            -t ghcr.io/${{ github.actor }}/vendure-worker-juniper010726:latest \
             ./my-shop-juniper/apps/server
             
           # Push the Docker image to GitHub Container Registry
-          docker push ghcr.io/${{ github.actor }}/vendure-server-juniper010726:latest
+          docker push ghcr.io/${{ github.actor }}/vendure-worker-juniper010726:latest
 
           # Delete local env var file (defaults) after transfer
           rm ./my-shop-juniper/apps/server/env-defaults.env
@@ -289,16 +292,16 @@ jobs:
           echo "BUILT=true" >> $GITHUB_ENV
           echo "PUSHED=true" >> $GITHUB_ENV
           echo "build_status=success" >> $GITHUB_OUTPUT
-            
-      - name: SSH in and Deploy Server image with Prod Secrets
+  
+      - name: SSH in and Deploy Worker image with Prod Secrets
         if: steps.check-changes.outputs.changes == 'true'
-        id: step-deploy-server
+        id: step-deploy-worker
         env:
           SSH_KEY: ${{ secrets.LINUX_SSH_PRIVATE_KEY_CICD }}
           SSH_USER: ${{ secrets.LINUX_BOTCICDGHA_USERNAME }}
           SERVER_IP: ${{ secrets.LINUX_SERVER_IPADDRESS }}
           GHPAT: ${{ secrets.GHPAT_AS_CICD_SECRET }}
-          SERVER_PROD_ENV: ${{ secrets.SRV_WRK__SECRET_ENV_FILE }}
+          WORKER_PROD_ENV: ${{ secrets.SRV_WRK__SECRET_ENV_FILE }}
         run: |
           # Setup SSH
           mkdir -p ~/.ssh/
@@ -323,63 +326,61 @@ jobs:
 
           # Create a temporary env file on the remote server
           echo "Creating temporary environment file..."
-          ssh prod "mkdir -p ~/vendure-server-juniper010726"
-          ssh prod "echo '$SERVER_PROD_ENV' > ~/vendure-server-juniper010726/.env"
+          ssh prod "mkdir -p ~/vendure-worker-juniper010726"
+          ssh prod "echo '$WORKER_PROD_ENV' > ~/vendure-worker-juniper010726/.env"
 
           # Ensure Docker network exists (create if it doesn't)
           ssh prod "docker network ls --filter name=vendure-network -q | grep -q . || docker network create vendure-network"
 
           # Deploy to remote server with environment file
-          ssh prod "docker pull ghcr.io/${{ github.actor }}/vendure-server-juniper010726:latest && \
-                    docker rm -f vendure-server-juniper010726 || true && \
+          ssh prod "docker pull ghcr.io/${{ github.actor }}/vendure-worker-juniper010726:latest && \
+                    docker rm -f vendure-worker-juniper010726 || true && \
                     docker run -d \
-                      --name vendure-server-juniper010726 \
+                      --name vendure-worker-juniper010726 \
                       --network vendure-network \
-                      --network-alias vendure-server \
-                      -p 3000:3000 \
-                      --env-file ~/vendure-server-juniper010726/.env \
-                      ghcr.io/${{ github.actor }}/vendure-server-juniper010726:latest"
+                      --network-alias vendure-worker \
+                      --env-file ~/vendure-worker-juniper010726/.env \
+                      ghcr.io/${{ github.actor }}/vendure-worker-juniper010726:latest"
 
           echo "Deleting temporarily created prod env file..."
-          ssh prod "rm ~/vendure-server-juniper010726/.env"
+          ssh prod "rm ~/vendure-worker-juniper010726/.env"
 
           # Deployment successful - set appropriate action message
           if [ -n "${{ steps.check-changes.outputs.force_deploy_reason }}" ]; then
             # This was a forced deployment due to missing container
             echo "action_taken=Deployed: ${{ steps.check-changes.outputs.force_deploy_reason }}" >> $GITHUB_OUTPUT
           else
-            # This was a normal deployment due to code changes
+            # This was a normal deployment due to code changes  
             echo "action_taken=New version deployed" >> $GITHUB_OUTPUT
           fi
           echo "deploy_status=success" >> $GITHUB_ENV
 
-      # Set no deployment action for when no deployment is needed
       - name: If no deployment action taken, Set no deployment action (Step only runs if no deploy)
         if: steps.check-changes.outputs.changes == 'false'
         id: no-deployment
         run: |
-          # No deployment was needed - container exists and no code changes
-          echo "action_taken=No deployment needed - container exists and no code changes" >> $GITHUB_OUTPUT
+          echo "action_taken=No deployment needed - no changes detected" >> $GITHUB_OUTPUT
 
-      # Save deployment marker if deploy was successful
+      # Save current commit as last deployed commit
       - name: Save deployment marker
-        if: steps.check-changes.outputs.changes == 'true' && env.deploy_status == 'success'
+        if: steps.check-changes.outputs.changes == 'true'
         run: |
           mkdir -p ./deployment-markers
-          git rev-parse HEAD > ./deployment-markers/server-last-commit.txt
+          git rev-parse HEAD > ./deployment-markers/worker-last-commit.txt
           echo "Saved current commit as last deployed commit marker"
 
-      # Upload the marker as an artifact
+      # Upload deployment marker as artifact for future runs
       - name: Upload deployment marker
-        if: steps.check-changes.outputs.changes == 'true' && env.deploy_status == 'success'
+        if: steps.check-changes.outputs.changes == 'true'
         uses: actions/upload-artifact@v4
         with:
-          name: server-last-deployed-commit
-          path: ./deployment-markers/server-last-commit.txt
+          name: worker-last-deployed-commit
+          path: ./deployment-markers/worker-last-commit.txt
           retention-days: 90
 
-      - name: Status Report
+      # Final status output
+      - name: Deployment Status
         run: |
-          echo "Server Deployment Status:"
+          echo "Worker Deployment Status:"
           echo "Changes Detected: ${{ steps.check-changes.outputs.changes }}"
-          echo "Action Taken: ${{ steps.step-deploy-server.outputs.action_taken || steps.no-deployment.outputs.action_taken }}"
+          echo "Action Taken: ${{ steps.step-deploy-worker.outputs.action_taken || steps.no-deployment.outputs.action_taken }}"
