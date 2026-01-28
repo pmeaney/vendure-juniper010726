@@ -9,8 +9,10 @@ import { defaultEmailHandlers, EmailPlugin, FileBasedTemplateLoader } from '@ven
 import { AssetServerPlugin } from '@vendure/asset-server-plugin';
 import { DashboardPlugin } from '@vendure/dashboard/plugin';
 import { GraphiqlPlugin } from '@vendure/graphiql-plugin';
-import 'dotenv/config';
 import path from 'path';
+// import 'dotenv/config'; // <-- default. imports .env but I prefer to give the .env file a descriptive name
+import dotenv from 'dotenv';
+dotenv.config({ path: '.env.local.example.srv-wrk' });
 
 const IS_DEV = process.env.APP_ENV === 'dev';
 const serverPort = +process.env.PORT || 3000;

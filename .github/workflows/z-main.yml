@@ -3,7 +3,8 @@ name: Vendure Deployment Pipeline
 
 on:
   push:
-    branches: [blah] #[main]
+    # branches: [blah] # uncomment for when dont want to run CICD on commit to main
+    branches: [main]
 
 permissions:
   contents: read

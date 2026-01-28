@@ -1,5 +1,8 @@
-# This is for local dev (e.g. laptop) development
-# Simplified - runs on localhost, no Docker networks needed
+### THIS FILE IS JUST FOR REFERENCE
+# Don't use this for local dev work-- particularly if you expect to find localhost via browser (or, if you want to run migrations and only have the db running)
+# This is file just for reference.  It's to show a similar setup to what we have deployed to the remote server.
+# Consider it "production-lilke"
+# On the remote server, we deploy via CICD in with: build image, publish image, run container.  on container run, we set it up similarly to the setup in this file-- in terms of container names, ports, volumes, network aliases, etc.
 services:
   v-db-juniper010726:
     image: postgres:16-alpine
@@ -11,6 +14,10 @@ services:
     volumes:
       # Bind mounts - directories from the host mapped into the container
       - ./v-db-juniper010726/pg-data-vendure-juniper:/var/lib/postgresql/data
+    networks:
+      dockernet-vendure-juniper:
+        aliases:
+          - vendure-database # Adding alias to reference in project so container names can be changed if desired. Aliases might appear in project code (particularly the database alias-- used as database host name.)
 
   v-srv-juniper010726:
     build:
@@ -31,6 +38,10 @@ services:
       - server-dist:/usr/src/app/dist                   # ← Named
     env_file:
       - ./my-shop-juniper/apps/server/.env.local.example.srv-wrk
+    networks:
+      dockernet-vendure-juniper:
+        aliases:
+          - vendure-server # Adding alias to reference in project so container names can be changed if desired. Aliases might appear in project code (particularly the database alias-- used as database host name.)
 
   v-wrk-juniper010726:
     build:
@@ -49,6 +60,10 @@ services:
       - worker-dist:/usr/src/app/dist                   # ← Named
     env_file:
       - ./my-shop-juniper/apps/server/.env.local.example.srv-wrk
+    networks:
+      dockernet-vendure-juniper:
+        aliases:
+          - vendure-worker # Adding alias to reference in project so container names can be changed if desired. Aliases might appear in project code (particularly the database alias-- used as database host name.)
 
   v-storefront-juniper010726:
     build:
@@ -68,6 +83,14 @@ services:
       - storefront-next:/app/.next                 # ← Named volume
     env_file:
       - ./my-shop-juniper/apps/storefront/.env.local.storefront.example
+    networks:
+      dockernet-vendure-juniper:
+        aliases:
+          - vendure-storefront # Adding alias to reference in project so container names can be changed if desired. Aliases might appear in project code (particularly the database alias-- used as database host name.)
+
+networks:
+  dockernet-vendure-juniper:
+    name: dockernet-vendure-juniper
 
 volumes:
   storefront-node-modules:
