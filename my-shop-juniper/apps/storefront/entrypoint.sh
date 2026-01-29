@@ -5,7 +5,6 @@ set -e
 if [ -f .next/skip-build ]; then
   echo "Running Next.js build at runtime..."
   npm run build
-  rm .next/skip-build
 fi
 
 # Start application
