@@ -25,13 +25,13 @@ git push origin v1.0-local-dev
 
 **v2.0 - Prototype Production** (CICD Deployment done: 1/29/26 - 67bb13d)
 - ✅ CI/CD pipeline functional
-- 📋 Production environment variables configured
+- ✅ Production environment variables configured
 - ✅ Mid-level Server Security (Debian Linux server deployed via Terraform with basic security features: UFW, Fail2ban, SSH key auth only, kernel hardening)
 - 📋 Mid-level App Deployment Security (changed credentials, proper secrets management)
 - 📋 Payment providers: Awaiting live account approval / approved but using test mode
 - (NOT hardened for public production use-- that's in v3.0)
 ```bash
-git tag -a v2.0-prototype-prod -m "Prototype production deployment complete"
+git tag -a v2.0-prototype-prod -m "Prototype production deployment complete - default env vars"
 git push origin v2.0-prototype-prod
 ```
 
