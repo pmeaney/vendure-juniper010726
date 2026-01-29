@@ -24,12 +24,12 @@ git push origin v1.0-local-dev
 - 📋 Prepare compliance docs (Privacy Policy, Terms of Service, Refund Policy)
 
 **v2.0 - Prototype Production** (CICD Deployment done: 1/29/26 - 67bb13d)
-- CI/CD pipeline functional
-- Production environment variables configured
-- Mid-level Server Security (Debian Linux server deployed via Terraform with basic security features: UFW, Fail2ban, SSH key auth only, kernel hardening)
-- Mid-level App Deployment Security (changed credentials, proper secrets management)
-- Payment providers: Awaiting live account approval / approved but using test mode
-- NOT hardened for public production use
+- ✅ CI/CD pipeline functional
+- 📋 Production environment variables configured
+- ✅ Mid-level Server Security (Debian Linux server deployed via Terraform with basic security features: UFW, Fail2ban, SSH key auth only, kernel hardening)
+- 📋 Mid-level App Deployment Security (changed credentials, proper secrets management)
+- 📋 Payment providers: Awaiting live account approval / approved but using test mode
+- (NOT hardened for public production use-- that's in v3.0)
 ```bash
 git tag -a v2.0-prototype-prod -m "Prototype production deployment complete"
 git push origin v2.0-prototype-prod
@@ -39,23 +39,23 @@ git push origin v2.0-prototype-prod
 **Between v2.0 and v3.0 - Essential Security & Payment Activation:**
 
 *Application-Level (Vendure):*
-- 🔒 HardenPlugin configured (prevents GraphQL query attacks)
-- 🔒 Rate limiting on API endpoints (prevent brute force)
+- 📋 🔒 HardenPlugin configured (prevents GraphQL query attacks)
+- 📋 🔒 Rate limiting on API endpoints (prevent brute force)
 
 *Infrastructure-Level:*
-- 🔒 Cloudflare integration (DDoS protection, CDN, SSL)
-- 🔒 Basic Cloudflare WAF rules (5 free rules)
-- 🔒 Database timezone verification (UTC)
-- 🔒 Trust proxy configuration for Express
-- 🔒 Weekly automated database backups
-- 🔒 Uptime monitoring (UptimeRobot free tier)
-- 🔒 Container resource limits (prevent runaway processes)
+- 📋 🔒 Cloudflare integration (DDoS protection, CDN, SSL)
+- 📋 🔒 Basic Cloudflare WAF rules (5 free rules)
+- 📋 🔒 Database timezone verification (UTC)
+- 📋 🔒 Trust proxy configuration for Express
+- 📋 🔒 Weekly automated database backups
+- 📋 🔒 Uptime monitoring (UptimeRobot free tier)
+- 📋 🔒 Container resource limits (prevent runaway processes)
 
 *Payment Activation:*
-- 💳 Switch Stripe to live mode (production API keys)
-- 💳 Switch PayPal to live mode
-- 💳 Test live transactions ($1 test purchases)
-- 💳 Verify webhook handling in production
+- 📋 💳 Switch Stripe to live mode (production API keys)
+- 📋 💳 Switch PayPal to live mode
+- 📋 💳 Test live transactions ($1 test purchases)
+- 📋 💳 Verify webhook handling in production
 
 **v3.0 - Production Ready** 📋 
 - All v2.0 features plus essential security hardening
