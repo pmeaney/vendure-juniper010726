@@ -6,6 +6,16 @@ After I get this initial deployment done and explore how to configure vendure fo
 - https://docs.vendure.io/guides/deployment/production-configuration/
 - https://docs.vendure.io/guides/developer-guide/security
 
+
+## Don't forget-- once Deployment is working... place the Nginx Proxy Manager into the project's container network.
+
+
+My containerized instance of nginx proxy manager creates its own network `nginx-proxy-mgr-011526` for nginx proxy manager to connect to its own postgres db.  However, I placed my vendure project's containers into a network called `vendure-network`. So, the two groups are isolated.  However, we need nginx to send traffic to our vendure project.  So, we'll connect nginx to our vendure container network with:
+
+`docker network connect vendure-network nginx-proxy-mgr-011526`
+
+Then, log into nginx proxy manager and it send traffic to our frontend app at `vendure-storefront:3001`.
+
 ## CICD Setup for Github Actions
 
 This project's CICD deployment uses the following secrets.
