@@ -8,4 +8,4 @@ if [ -f .next/skip-build ]; then
 fi
 
 # Start application
-exec node server.js
+exec npm run start
