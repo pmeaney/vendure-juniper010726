@@ -32,9 +32,11 @@ vendure_srv_wrk_defaults: |
 # In the Repo secret env vars, be sure to update:
 #   NEXT_PUBLIC_SITE_URL -> the actual site URL
 # Re: VENDURE_SHOP_API_URL -- this item, on prod, is used internally by the containerized apps, so it should be ok as is.
+# SKIP_NEXTJS_BUILD -- not needed in prod secrets. Used so NextJS doesn't build during the Docker image build process (where vendure-server is inaccessible), but instead builds during container startup (when vendure-server is accessible via network)
 vendure_storefront_defaults: |
   VENDURE_SHOP_API_URL=http://vendure-server:3000/shop-api
   VENDURE_CHANNEL_TOKEN=__default_channel__
   NEXT_PUBLIC_SITE_URL=https://example.com
   NEXT_PUBLIC_SITE_NAME=my-vendure-shop
   REVALIDATION_SECRET=e8kEmYajEeIePbtnT30zCTT34ZpNvyZpRyQRASVSuxI&#x3D;
+  SKIP_NEXTJS_BUILD=true

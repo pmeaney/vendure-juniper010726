@@ -49,38 +49,45 @@ CMD ["npm", "run", "dev"]
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-# NextJS needs env vars at build time - copy and rename before build
 COPY env-defaults.env .env
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npm run build
+# Skip build during Docker build - will build at runtime when network is available
+RUN if [ ! -f .env ] || ! grep -q "SKIP_NEXTJS_BUILD=true" .env; then \
+      npm run build; \
+    else \
+      echo "Skipping build - will build at runtime" && \
+      mkdir -p .next && \
+      touch .next/skip-build; \
+    fi
 
 # Production runner stage
 FROM base AS prod
 WORKDIR /app
 
-# default env vars to be built into image.  not to worry-- we'll overwrite them via github actions secrets when we go to run the container in the final steps of the CICD deployment
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3001
 ENV HOSTNAME="0.0.0.0"
 
-# Create non-root user for security
+# Create non-root user
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
 # Copy standalone output from builder
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
 
-# Bake in defaults (overridden by --env-file at runtime)
+# Copy entrypoint
+COPY --chown=nextjs:nodejs entrypoint.sh ./
+RUN chmod +x entrypoint.sh
+
+# Bake in defaults
 COPY --chown=nextjs:nodejs env-defaults.env .env
 
 USER nextjs
-
 EXPOSE 3001
 
-# Standalone output creates a server.js file. 
-# So, we need to use this for stand alone mode, rather than `npm run build` then `npm run start`
-# otherwise we'll get an error
-CMD ["node", "server.js"]
+ENTRYPOINT ["./entrypoint.sh"]
