@@ -228,6 +228,8 @@ jobs:
         id: env-defaults
         run: |
           # Extract Vendure Storefront environment variables from defaults file
+          # Note: the Dockerfile will copy it within its instructions, so no need to pass it into the image during the CICD `docker build` command.
+          # It'll already be in the directory where the Dockerfile's build process copies it into its image.
           VENDURE_STOREFRONT_DEFAULTS=$(yq e '.vendure_storefront_defaults' .github/defaults/env-defaults.yml)
           echo "$VENDURE_STOREFRONT_DEFAULTS" > ./my-shop-juniper/apps/storefront/env-defaults.env
 

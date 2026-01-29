@@ -4,32 +4,41 @@ WORKDIR /app
 
 # Dependencies stage (only for production build)
 FROM base AS deps
-COPY package.json ./
-
-# Running fresh install & generating package-lock.json (at least once) from container, which is then shared back with macbook host.
-# on subsequent builds, it can be `npm ci`, since we'll already have the package-lock.json generated from the container the first time.
-# Anytime we upgrade dependency versions, we'll need to once again generate a fresh package-lock.json.
-# Error: Cannot find module '../lightningcss.linux-arm64-gnu.node'
-# Copy if it exists (the * makes it optional)
-COPY package-lock.json* ./  
-
-# If package-lock.json exists, use npm ci (fast). Otherwise, use npm install (generates lockfile)
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
-
+COPY package.json package-lock.json* ./
+# Fail if package-lock.json doesn't exist
+RUN if [ ! -f package-lock.json ]; then \
+      echo ""; \
+      echo "❌ ERROR: package-lock.json not found!"; \
+      echo ""; \
+      echo "This is a container-first project. Dependencies must be generated"; \
+      echo "from within a Linux container to match the production environment."; \
+      echo ""; \
+      echo "To fix this, review the instructions in the generate-lockfiles.sh"; \
+      echo "file and in the project README to understand why and how to generate"; \
+      echo "the package-lock.json according to this project's design."; \
+      echo ""; \
+      exit 1; \
+    fi
+RUN npm ci
 
 # Development stage (standalone - generates own lockfile)
 FROM base AS dev
-COPY package.json ./
-
-# Running fresh install & generating package-lock.json (at least once) from container, which is then shared back with macbook host.
-# on subsequent builds, it can be `npm ci`, since we'll already have the package-lock.json generated from the container the first time.
-# Anytime we upgrade dependency versions, we'll need to once again generate a fresh package-lock.json.
-# Error: Cannot find module '../lightningcss.linux-arm64-gnu.node'
-# Copy if it exists (the * makes it optional)
-COPY package-lock.json* ./  
-
-# If package-lock.json exists, use npm ci (fast). Otherwise, use npm install (generates lockfile)
-RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
+COPY package.json package-lock.json* ./
+# Fail if package-lock.json doesn't exist
+RUN if [ ! -f package-lock.json ]; then \
+      echo ""; \
+      echo "❌ ERROR: package-lock.json not found!"; \
+      echo ""; \
+      echo "This is a container-first project. Dependencies must be generated"; \
+      echo "from within a Linux container to match the production environment."; \
+      echo ""; \
+      echo "To fix this, review the instructions in the generate-lockfiles.sh"; \
+      echo "file and in the project README to understand why and how to generate"; \
+      echo "the package-lock.json according to this project's design."; \
+      echo ""; \
+      exit 1; \
+    fi
+RUN npm ci
 
 COPY . .
 EXPOSE 3001
@@ -40,6 +49,8 @@ CMD ["npm", "run", "dev"]
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+# NextJS needs env vars at build time - copy and rename before build
+COPY env-defaults.env .env
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npm run build
 
@@ -61,6 +72,9 @@ RUN addgroup --system --gid 1001 nodejs && \
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
+
+# Bake in defaults (overridden by --env-file at runtime)
+COPY --chown=nextjs:nodejs env-defaults.env .env
 
 USER nextjs
 
