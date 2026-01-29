@@ -51,22 +51,22 @@ jobs:
       SRV_WRK__SECRET_ENV_FILE: ${{ secrets.SRV_WRK__SECRET_ENV_FILE }}
 
   # # Storefront deployment (depends on Worker)
-  # storefront:
-  #   needs: worker
-  #   uses: ./.github/workflows/vendure-storefront-deploy.yml
-  #   permissions:
-  #     contents: write
-  #     actions: write
-  #   secrets:
-  #     LINUX_SSH_PRIVATE_KEY_CICD: ${{ secrets.LINUX_SSH_PRIVATE_KEY_CICD }}
-  #     LINUX_BOTCICDGHA_USERNAME: ${{ secrets.LINUX_BOTCICDGHA_USERNAME }}
-  #     LINUX_SERVER_IPADDRESS: ${{ secrets.LINUX_SERVER_IPADDRESS }}
-  #     GHPAT_AS_CICD_SECRET: ${{ secrets.GHPATCICD_VendureRepo_010726 }}
-  #     STOREFRONT__SECRET_ENV_FILE: ${{ secrets.STOREFRONT__SECRET_ENV_FILE }}
+  storefront:
+    needs: worker
+    uses: ./.github/workflows/vendure-storefront-deploy.yml
+    permissions:
+      contents: write
+      actions: write
+    secrets:
+      LINUX_SSH_PRIVATE_KEY_CICD: ${{ secrets.LINUX_SSH_PRIVATE_KEY_CICD }}
+      LINUX_BOTCICDGHA_USERNAME: ${{ secrets.LINUX_BOTCICDGHA_USERNAME }}
+      LINUX_SERVER_IPADDRESS: ${{ secrets.LINUX_SERVER_IPADDRESS }}
+      GHPAT_AS_CICD_SECRET: ${{ secrets.GHPATCICD_VendureRepo_010726 }}
+      STOREFRONT__SECRET_ENV_FILE: ${{ secrets.STOREFRONT__SECRET_ENV_FILE }}
 
   # Deployment summary
   summary:
-    needs: [database, server, worker] # storefront, server, worker]
+    needs: [database, server, worker, storefront] # storefront, server, worker]
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -178,36 +178,36 @@ jobs:
           fi
           echo "" >> $GITHUB_STEP_SUMMARY
 
-        # # Storefront
-        # echo "## 🌐 Storefront (vendure-storefront-juniper010726)" >> $GITHUB_STEP_SUMMARY
-        
-        # if [ -f "./deployment-markers/storefront-last-commit.txt" ]; then
-        #   LAST_COMMIT=$(cat ./deployment-markers/storefront-last-commit.txt)
-        #   LAST_SHORT=$(git rev-parse --short $LAST_COMMIT)
-        #   LAST_DATE=$(git show -s --format=%ci $LAST_COMMIT)
-        #   CHANGES=$(git diff --name-only $LAST_COMMIT $CURRENT_COMMIT -- ./my-shop-juniper/apps/storefront | wc -l)
-        # else
-        #   LAST_SHORT="N/A"
-        #   LAST_DATE="First deployment"
-        #   CHANGES="N/A"
-        # fi
-        
-        # echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
-        # echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
-        # echo "| **Last deployed** | \`${LAST_SHORT}\` (${LAST_DATE}) |" >> $GITHUB_STEP_SUMMARY
-        # echo "| **Changes detected** | ${{ needs.storefront.outputs.had_changes }} |" >> $GITHUB_STEP_SUMMARY
-        # echo "| **Files changed** | ${CHANGES} |" >> $GITHUB_STEP_SUMMARY
-        # echo "| **Action taken** | ${{ needs.storefront.outputs.action_taken }} |" >> $GITHUB_STEP_SUMMARY
-        
-        # if [[ "${{ needs.storefront.outputs.had_changes }}" == "true" ]]; then
-        #   echo "" >> $GITHUB_STEP_SUMMARY
-        #   echo "**Changed files:**" >> $GITHUB_STEP_SUMMARY
-        #   echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-        #   if [ -f "./deployment-markers/storefront-last-commit.txt" ]; then
-        #     git diff --name-only $LAST_COMMIT $CURRENT_COMMIT -- ./my-shop-juniper/apps/storefront >> $GITHUB_STEP_SUMMARY
-        #   else
-        #     echo "First deployment - all files are new" >> $GITHUB_STEP_SUMMARY
-        #   fi
-        #   echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-        # fi
-        # echo "" >> $GITHUB_STEP_SUMMARY
+          # Storefront
+          echo "## 🌐 Storefront (vendure-storefront-juniper010726)" >> $GITHUB_STEP_SUMMARY
+          
+          if [ -f "./deployment-markers/storefront-last-commit.txt" ]; then
+            LAST_COMMIT=$(cat ./deployment-markers/storefront-last-commit.txt)
+            LAST_SHORT=$(git rev-parse --short $LAST_COMMIT)
+            LAST_DATE=$(git show -s --format=%ci $LAST_COMMIT)
+            CHANGES=$(git diff --name-only $LAST_COMMIT $CURRENT_COMMIT -- ./my-shop-juniper/apps/storefront | wc -l)
+          else
+            LAST_SHORT="N/A"
+            LAST_DATE="First deployment"
+            CHANGES="N/A"
+          fi
+          
+          echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
+          echo "| **Last deployed** | \`${LAST_SHORT}\` (${LAST_DATE}) |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Changes detected** | ${{ needs.storefront.outputs.had_changes }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Files changed** | ${CHANGES} |" >> $GITHUB_STEP_SUMMARY
+          echo "| **Action taken** | ${{ needs.storefront.outputs.action_taken }} |" >> $GITHUB_STEP_SUMMARY
+          
+          if [[ "${{ needs.storefront.outputs.had_changes }}" == "true" ]]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Changed files:**" >> $GITHUB_STEP_SUMMARY
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            if [ -f "./deployment-markers/storefront-last-commit.txt" ]; then
+              git diff --name-only $LAST_COMMIT $CURRENT_COMMIT -- ./my-shop-juniper/apps/storefront >> $GITHUB_STEP_SUMMARY
+            else
+              echo "First deployment - all files are new" >> $GITHUB_STEP_SUMMARY
+            fi
+            echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY

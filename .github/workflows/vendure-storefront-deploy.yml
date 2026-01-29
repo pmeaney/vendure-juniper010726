@@ -1,0 +1,357 @@
+# .github/workflows/vendure-storefront-deploy.yml
+name: Storefront Deploy
+
+on:
+  workflow_call:
+    secrets:
+      LINUX_SSH_PRIVATE_KEY_CICD:
+        required: true
+      LINUX_BOTCICDGHA_USERNAME:
+        required: true
+      LINUX_SERVER_IPADDRESS:
+        required: true
+      GHPAT_AS_CICD_SECRET:
+        required: true
+      STOREFRONT__SECRET_ENV_FILE:
+        required: true
+    outputs:
+      had_changes:
+        description: "Whether changes were detected"
+        value: ${{ jobs.deploy.outputs.changes_detected }}
+      action_taken:
+        description: "What action was taken"
+        value: ${{ jobs.deploy.outputs.action }}
+      changed_files:
+        description: "List of files that were changed"
+        value: ${{ jobs.deploy.outputs.changed_files }}
+      changed_files_count:
+        description: "Number of files that were changed"
+        value: ${{ jobs.deploy.outputs.changed_files_count }}
+
+jobs:
+  deploy:
+    environment: production
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+    outputs:
+      changes_detected: ${{ steps.check-changes.outputs.changes }}
+      action: ${{ steps.step-deploy-storefront.outputs.action_taken || steps.no-deployment.outputs.action_taken }}
+      changed_files: ${{ steps.changed-files.outputs.files }}
+      changed_files_count: ${{ steps.changed-files.outputs.count }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Setup GitHub CLI for artifact operations
+      - name: Setup GitHub CLI
+        run: |
+          echo "Setting up GitHub CLI authentication..."
+          echo ${{ github.token }} | gh auth login --with-token
+
+      # Download last successful deployment marker if it exists
+      - name: Download last successful deployment marker
+        id: download-marker
+        continue-on-error: true
+        run: |
+          mkdir -p ./deployment-markers
+
+          # Try to download the artifact using the GitHub CLI
+          echo "Attempting to download latest storefront-last-deployed-commit artifact..."
+          gh run download --name storefront-last-deployed-commit --dir ./deployment-markers --repo ${{ github.repository }} || true
+
+          # Check if the download was successful
+          if [ -f "./deployment-markers/storefront-last-commit.txt" ]; then
+            echo "✅ Successfully downloaded previous deployment marker"
+          else
+            echo "⚠️ No previous deployment marker found or download failed"
+          fi
+
+      # Check if the storefront container exists on the server
+      - name: Check if Storefront Container exists on server
+        id: check-container-exists
+        env:
+          SSH_KEY: ${{ secrets.LINUX_SSH_PRIVATE_KEY_CICD }}
+          SSH_USER: ${{ secrets.LINUX_BOTCICDGHA_USERNAME }}
+          SERVER_IP: ${{ secrets.LINUX_SERVER_IPADDRESS }}
+        run: |
+          # Setup SSH
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          cat >>~/.ssh/config <<END
+          Host prod
+            HostName $SERVER_IP
+            User $SSH_USER
+            IdentityFile ~/.ssh/id_ed25519
+            StrictHostKeyChecking no
+          END
+
+          # Check if Storefront container exists (running or stopped)
+          CONTAINER_EXISTS=$(ssh prod "docker ps -a --format '{{.Names}}' | grep -q '^vendure-storefront-juniper010726$' && echo 'true' || echo 'false'")
+
+          echo "container_exists=$CONTAINER_EXISTS" >> $GITHUB_OUTPUT
+          echo "Container exists: $CONTAINER_EXISTS"
+
+      # Determine last deployed commit hash
+      - name: Get last deployed commit hash
+        id: get-last-commit
+        run: |
+          if [ -f "./deployment-markers/storefront-last-commit.txt" ]; then
+            LAST_COMMIT=$(cat ./deployment-markers/storefront-last-commit.txt)
+            echo "Last successfully deployed storefront commit: $LAST_COMMIT"
+            echo "last_commit=$LAST_COMMIT" >> $GITHUB_OUTPUT
+          else
+            # If no marker exists, get a commit far back enough to capture all changes
+            # This will trigger a build on first run
+            LAST_COMMIT=$(git rev-list --max-parents=0 HEAD)
+            echo "No previous deployment marker found. Using initial commit: $LAST_COMMIT"
+            echo "last_commit=$LAST_COMMIT" >> $GITHUB_OUTPUT
+          fi
+
+      # Check for changes in storefront directory and make deployment decision
+      - name: Check Storefront Directory Changes
+        id: check-changes
+        run: |
+          echo "=== Running Storefront Deployment Decision Model ==="
+
+          # STEP 1: Evaluate Container Status
+          CONTAINER_EXISTS="${{ steps.check-container-exists.outputs.container_exists }}"
+          echo "Q1: Does Storefront container (vendure-storefront-juniper010726) exist? Answer: $CONTAINER_EXISTS"
+
+          # STEP 2: Evaluate Artifact Status
+          ARTIFACT_EXISTS="false"
+          if [ -f "./deployment-markers/storefront-last-commit.txt" ]; then
+            ARTIFACT_EXISTS="true"
+            LAST_COMMIT=$(cat ./deployment-markers/storefront-last-commit.txt)
+            LAST_COMMIT_SHORT=$(git rev-parse --short $LAST_COMMIT 2>/dev/null || echo "N/A")
+            echo "Q2: Does deployment marker artifact exist? Answer: $ARTIFACT_EXISTS (Last commit: $LAST_COMMIT_SHORT)"
+          else
+            echo "Q2: Does deployment marker artifact exist? Answer: $ARTIFACT_EXISTS"
+          fi
+
+          # STEP 3: Evaluate Changes (if applicable)
+          CHANGES_DETECTED="N/A"
+          CHANGED_FILES=""
+          if [ "$CONTAINER_EXISTS" = "true" ] && [ "$ARTIFACT_EXISTS" = "true" ]; then
+            CHANGES=$(git diff --name-only $LAST_COMMIT HEAD -- ./my-shop-juniper/apps/storefront)
+            if [ -n "$CHANGES" ]; then
+              CHANGES_DETECTED="true"
+              CHANGED_FILES="$CHANGES"
+              echo "Q3: Are there changes in my-shop-juniper/apps/storefront? Answer: $CHANGES_DETECTED"
+              echo "Changed files:"
+              echo "$CHANGED_FILES"
+            else
+              CHANGES_DETECTED="false"
+              echo "Q3: Are there changes in my-shop-juniper/apps/storefront? Answer: $CHANGES_DETECTED"
+            fi
+          else
+            echo "Q3: Are there changes in my-shop-juniper/apps/storefront? Answer: $CHANGES_DETECTED (not checked due to container/artifact status)"
+          fi
+
+          # STEP 4: Decision Matrix
+          echo ""
+          echo "Decision Matrix for Build and Deploy:"
+          echo "| Container Exists? | Artifact Exists? | Changes Detected? | Decision | Reason |"
+          echo "|-------------------|------------------|-------------------|----------|-------|"
+          if [ "$CONTAINER_EXISTS" = "false" ]; then
+            echo "| No                | Any              | Any               | **Build & Deploy** | Initial deployment - no container exists |"
+            echo "| Yes               | Yes              | Yes               | Build & Deploy     | Code changes detected in my-shop-juniper/apps/storefront |"
+            echo "| Yes               | Yes              | No                | No Build/Deploy    | No code changes detected |"
+            echo "| Yes               | No               | N/A               | No Build/Deploy    | Container exists but no artifact (incomplete state) |"
+            echo ""
+            echo "DECISION: Build and Deploy (Initial deployment - no container exists)"
+            echo "changes=true" >> $GITHUB_OUTPUT
+            echo "force_deploy_reason=Initial deployment - no container exists" >> $GITHUB_OUTPUT
+            git ls-files ./my-shop-juniper/apps/storefront > ./storefront-changed-files.txt
+          elif [ "$CONTAINER_EXISTS" = "true" ] && [ "$ARTIFACT_EXISTS" = "true" ] && [ "$CHANGES_DETECTED" = "true" ]; then
+            echo "| No                | Any              | Any               | Build & Deploy     | Initial deployment - no container exists |"
+            echo "| Yes               | Yes              | Yes               | **Build & Deploy** | Code changes detected in my-shop-juniper/apps/storefront |"
+            echo "| Yes               | Yes              | No                | No Build/Deploy    | No code changes detected |"
+            echo "| Yes               | No               | N/A               | No Build/Deploy    | Container exists but no artifact (incomplete state) |"
+            echo ""
+            echo "DECISION: Build and Deploy (Code changes detected in my-shop-juniper/apps/storefront)"
+            echo "changes=true" >> $GITHUB_OUTPUT
+            echo "$CHANGED_FILES" > ./storefront-changed-files.txt
+          elif [ "$CONTAINER_EXISTS" = "true" ] && [ "$ARTIFACT_EXISTS" = "true" ] && [ "$CHANGES_DETECTED" = "false" ]; then
+            echo "| No                | Any              | Any               | Build & Deploy     | Initial deployment - no container exists |"
+            echo "| Yes               | Yes              | Yes               | Build & Deploy     | Code changes detected in my-shop-juniper/apps/storefront |"
+            echo "| Yes               | Yes              | No                | **No Build/Deploy** | No code changes detected |"
+            echo "| Yes               | No               | N/A               | No Build/Deploy    | Container exists but no artifact (incomplete state) |"
+            echo ""
+            echo "DECISION: No Build/Deploy (No code changes detected)"
+            echo "changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "| No                | Any              | Any               | Build & Deploy     | Initial deployment - no container exists |"
+            echo "| Yes               | Yes              | Yes               | Build & Deploy     | Code changes detected in my-shop-juniper/apps/storefront |"
+            echo "| Yes               | Yes              | No                | No Build/Deploy    | No code changes detected |"
+            echo "| Yes               | No               | N/A               | **No Build/Deploy** | Container exists but no artifact (incomplete state) |"
+            echo ""
+            echo "DECISION: No Build/Deploy (Container exists but no artifact - incomplete state)"
+            echo "changes=false" >> $GITHUB_OUTPUT
+          fi
+
+          # STEP 5: Summary of Changed Files (if deploying)
+          if [ "${{ steps.check-changes.outputs.changes }}" = "true" ]; then
+            echo ""
+            echo "Files to be deployed:"
+            cat ./storefront-changed-files.txt
+          fi
+
+      # Store changed files list as output
+      - name: Store changed files list as output
+        id: changed-files
+        if: steps.check-changes.outputs.changes == 'true'
+        run: |
+          # Use GitHub's multiline output syntax
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          cat ./storefront-changed-files.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+          # Count the number of changed files correctly
+          CHANGE_COUNT=$(cat ./storefront-changed-files.txt | wc -l | xargs)
+          echo "count=$CHANGE_COUNT" >> $GITHUB_OUTPUT
+
+      # Install yq for reading env defaults
+      - name: Install yq
+        if: steps.check-changes.outputs.changes == 'true'
+        run: |
+          wget https://github.com/mikefarah/yq/releases/download/v4.34.1/yq_linux_amd64 -O /usr/local/bin/yq
+          chmod +x /usr/local/bin/yq
+
+      # Load environment defaults
+      - name: Load Environment Defaults
+        if: steps.check-changes.outputs.changes == 'true'
+        id: env-defaults
+        run: |
+          # Extract Vendure Storefront environment variables from defaults file
+          VENDURE_STOREFRONT_DEFAULTS=$(yq e '.vendure_storefront_defaults' .github/defaults/env-defaults.yml)
+          echo "$VENDURE_STOREFRONT_DEFAULTS" > ./my-shop-juniper/apps/storefront/env-defaults.env
+
+      - name: Login to GitHub Container Registry
+        if: steps.check-changes.outputs.changes == 'true'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHPAT_AS_CICD_SECRET }}
+
+      - name: Build Image with Default Secrets, then Publish
+        if: steps.check-changes.outputs.changes == 'true'
+        id: build-publish
+        run: |
+          echo "Building and publishing storefront Docker image..."
+
+          # Build the Vendure Storefront Docker image with default env file
+          docker build \
+            -f my-shop-juniper/apps/storefront/Dockerfile.storefront \
+            --target prod \
+            --no-cache \
+            -t ghcr.io/${{ github.actor }}/vendure-storefront-juniper010726:latest \
+            ./my-shop-juniper/apps/storefront
+            
+          # Push the Docker image to GitHub Container Registry
+          docker push ghcr.io/${{ github.actor }}/vendure-storefront-juniper010726:latest
+
+          # Delete local env var file (defaults) after transfer
+          rm ./my-shop-juniper/apps/storefront/env-defaults.env
+
+          echo "BUILT=true" >> $GITHUB_ENV
+          echo "PUSHED=true" >> $GITHUB_ENV
+          echo "build_status=success" >> $GITHUB_OUTPUT
+  
+      - name: SSH in and Deploy Storefront image with Prod Secrets
+        if: steps.check-changes.outputs.changes == 'true'
+        id: step-deploy-storefront
+        env:
+          SSH_KEY: ${{ secrets.LINUX_SSH_PRIVATE_KEY_CICD }}
+          SSH_USER: ${{ secrets.LINUX_BOTCICDGHA_USERNAME }}
+          SERVER_IP: ${{ secrets.LINUX_SERVER_IPADDRESS }}
+          GHPAT: ${{ secrets.GHPAT_AS_CICD_SECRET }}
+          STOREFRONT_PROD_ENV: ${{ secrets.STOREFRONT__SECRET_ENV_FILE }}
+        run: |
+          # Setup SSH
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+          cat >>~/.ssh/config <<END
+          Host prod
+            HostName $SERVER_IP
+            User $SSH_USER
+            IdentityFile ~/.ssh/id_ed25519
+            StrictHostKeyChecking no
+          END
+                
+          # Verify connection to server with simple commands
+          echo "Verifying server connection..."
+          ssh prod "hostname && which docker && uptime"
+
+          # First authenticate with GHCR on the remote server
+          echo "Authenticating with GitHub Container Registry on remote server..."
+          ssh prod "echo '$GHPAT' | docker login ghcr.io -u ${{ github.actor }} --password-stdin"
+
+          # Create a temporary env file on the remote server
+          echo "Creating temporary environment file..."
+          ssh prod "mkdir -p ~/vendure-storefront-juniper010726"
+          ssh prod "echo '$STOREFRONT_PROD_ENV' > ~/vendure-storefront-juniper010726/.env"
+
+          # Ensure Docker network exists (create if it doesn't)
+          ssh prod "docker network ls --filter name=vendure-network -q | grep -q . || docker network create vendure-network"
+
+          # Deploy to remote server with environment file
+          ssh prod "docker pull ghcr.io/${{ github.actor }}/vendure-storefront-juniper010726:latest && \
+                    docker rm -f vendure-storefront-juniper010726 || true && \
+                    docker run -d \
+                      --name vendure-storefront-juniper010726 \
+                      --network vendure-network \
+                      --network-alias vendure-storefront \
+                      -p 3001:3001 \
+                      --env-file ~/vendure-storefront-juniper010726/.env \
+                      ghcr.io/${{ github.actor }}/vendure-storefront-juniper010726:latest"
+
+          echo "Deleting temporarily created prod env file..."
+          ssh prod "rm ~/vendure-storefront-juniper010726/.env"
+
+          # Deployment successful - set appropriate action message
+          if [ -n "${{ steps.check-changes.outputs.force_deploy_reason }}" ]; then
+            # This was a forced deployment due to missing container
+            echo "action_taken=Deployed: ${{ steps.check-changes.outputs.force_deploy_reason }}" >> $GITHUB_OUTPUT
+          else
+            # This was a normal deployment due to code changes  
+            echo "action_taken=New version deployed" >> $GITHUB_OUTPUT
+          fi
+          echo "deploy_status=success" >> $GITHUB_ENV
+
+      - name: If no deployment action taken, Set no deployment action (Step only runs if no deploy)
+        if: steps.check-changes.outputs.changes == 'false'
+        id: no-deployment
+        run: |
+          echo "action_taken=No deployment needed - no changes detected" >> $GITHUB_OUTPUT
+
+      # Save current commit as last deployed commit
+      - name: Save deployment marker
+        if: steps.check-changes.outputs.changes == 'true'
+        run: |
+          mkdir -p ./deployment-markers
+          git rev-parse HEAD > ./deployment-markers/storefront-last-commit.txt
+          echo "Saved current commit as last deployed commit marker"
+
+      # Upload deployment marker as artifact for future runs
+      - name: Upload deployment marker
+        if: steps.check-changes.outputs.changes == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: storefront-last-deployed-commit
+          path: ./deployment-markers/storefront-last-commit.txt
+          retention-days: 90
+
+      # Final status output
+      - name: Deployment Status
+        run: |
+          echo "Storefront Deployment Status:"
+          echo "Changes Detected: ${{ steps.check-changes.outputs.changes }}"
+          echo "Action Taken: ${{ steps.step-deploy-storefront.outputs.action_taken || steps.no-deployment.outputs.action_taken }}"
