@@ -1,6 +1,7 @@
 import {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
+    cacheComponents: true,
     images: {
         // This is necessary to display images from your local Vendure instance
         dangerouslyAllowLocalIP: true, // <-- needed for NextJS image optimization to not be buggy during local dev work
@@ -20,8 +21,7 @@ const nextConfig: NextConfig = {
         ],
     },
     experimental: {
-        rootParams: true,
-        cacheComponents: true
+        rootParams: true
     }
 };
 
