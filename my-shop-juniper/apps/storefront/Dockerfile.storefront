@@ -94,6 +94,9 @@ RUN chmod +x entrypoint.sh
 # Bake in defaults
 COPY --chown=nextjs:nodejs env-defaults.env .env
 
+# Give nextjs user write permissions to /app for runtime build
+RUN chown -R nextjs:nodejs /app  
+
 USER nextjs
 EXPOSE 3001
 
