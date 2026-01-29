@@ -73,12 +73,19 @@ ENV HOSTNAME="0.0.0.0"
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 
-# Copy everything from builder (includes .next directory whether built or just skip marker)
+# Copy EVERYTHING needed for runtime build
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
+COPY --from=builder --chown=nextjs:nodejs /app/package-lock.json ./package-lock.json
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
 COPY --from=builder --chown=nextjs:nodejs /app/src ./src
+COPY --from=builder --chown=nextjs:nodejs /app/next.config.ts ./next.config.ts
+COPY --from=builder --chown=nextjs:nodejs /app/tsconfig.json ./tsconfig.json
+COPY --from=builder --chown=nextjs:nodejs /app/postcss.config.mjs ./postcss.config.mjs
+COPY --from=builder --chown=nextjs:nodejs /app/components.json ./components.json
+COPY --from=builder --chown=nextjs:nodejs /app/eslint.config.mjs ./eslint.config.mjs
+COPY --from=builder --chown=nextjs:nodejs /app/graphql.config.yml ./graphql.config.yml
 
 # Copy entrypoint
 COPY --chown=nextjs:nodejs entrypoint.sh ./
