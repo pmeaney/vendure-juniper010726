@@ -31,7 +31,7 @@ git push origin v1.0-local-dev
 - 📋 Payment providers: Awaiting live account approval / approved but using test mode
 - (NOT hardened for public production use-- that's in v3.0)
 ```bash
-git tag -a v2.0-prototype-prod -m "Prototype production deployment complete - default env vars"
+git tag -a v2.0-prototype-prod -m "Prototype production deployment complete"
 git push origin v2.0-prototype-prod
 ```
 
