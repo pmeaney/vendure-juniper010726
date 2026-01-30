@@ -24,6 +24,19 @@ docker network inspect vendure-network | grep nginx
 
 ---
 
+## Connect by ssh tunnel to Nginx Proxy Manager via Browser
+
+Since direct http access to the server is disabled, you won't be able to reach it on the browser at http://serverIp:81 as you might normally be able to, in the default case.
+
+Instead, to log into nginx proxy manager from browser, open ssh tunnel.  (below, `deb` is the name of my ssh config user-- it stands for Debian. You can use username:ip instead if needed). 
+
+```bash
+# Run this in CLI:
+ssh -L 8181:localhost:81 deb
+# then access on browser at:
+http://localhost:8181/
+```
+
 ## 1. Storefront Proxy Host (Public Shop)
 
 ### Domain Configuration
@@ -96,6 +109,38 @@ Admin panel accessible at: **`https://admin.theWebsiteUrl.com/admin`**
 - **Password:** `superadmin`
 
 > **Note:** These are default credentials from your env-defaults.yml. Change them immediately in production!
+
+patDevOpsUser@server011526-debian-ecom:~$ docker logs 27
+
+> server@0.1.0 start:server
+> node ./dist/index.js
+
+## Dev vs Prod 
+
+### Ports-- on Dev, the port for the dashboard is `5173`-- the vite live dev server runs on that port.  but in prod, it's `3000`, as you can see in this production deploy logs output:
+
+```bash
+Successfully ran migration: InitialMigration1769621898632
+info 1/30/26, 10:35 PM - [Vendure Server] Bootstrapping Vendure Server (pid: 20)...
+info 1/30/26, 10:35 PM - [AssetServerPlugin] Creating asset server middleware
+info 1/30/26, 10:35 PM - [EmailPlugin] Creating dev mailbox middleware
+info 1/30/26, 10:35 PM - [RoutesResolver] HealthController {/health}:
+info 1/30/26, 10:35 PM - [RouterExplorer] Mapped {/health, GET} route
+info 1/30/26, 10:35 PM - [GraphQLModule] Mapped {/shop-api, POST} route
+info 1/30/26, 10:35 PM - [GraphQLModule] Mapped {/admin-api, POST} route
+info 1/30/26, 10:35 PM - [NestApplication] Nest application successfully started
+info 1/30/26, 10:35 PM - [Vendure Server] ====================================================
+info 1/30/26, 10:35 PM - [Vendure Server]   Vendure server (v3.5.2) now running on port 3000
+info 1/30/26, 10:35 PM - [Vendure Server] ----------------------------------------------------
+info 1/30/26, 10:35 PM - [Vendure Server] Shop API:       http://localhost:3000/shop-api
+info 1/30/26, 10:35 PM - [Vendure Server] Admin API:      http://localhost:3000/admin-api
+info 1/30/26, 10:35 PM - [Vendure Server] Dashboard UI:   http://localhost:3000/dashboard
+info 1/30/26, 10:35 PM - [Vendure Server] GraphiQL Admin: http://localhost:3000/graphiql/admin
+info 1/30/26, 10:35 PM - [Vendure Server] GraphiQL Shop:  http://localhost:3000/graphiql/shop
+info 1/30/26, 10:35 PM - [Vendure Server] Asset server:   http://localhost:3000/assets
+info 1/30/26, 10:35 PM - [Vendure Server] Dev mailbox:    http://localhost:3000/mailbox
+info 1/30/26, 10:35 PM - [Vendure Server] ====================================================
+```
 
 ---
 
