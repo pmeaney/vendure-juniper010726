@@ -2,6 +2,12 @@
 
 This document describes how to configure Nginx Proxy Manager to route traffic to the Vendure storefront and admin panel.
 
+After setup, tail the nginx access logs with:
+
+```bash
+# List all access logs and tail them
+docker exec nginx-proxy-mgr-011526 sh -c 'tail -f /data/logs/proxy-host-*_access.log'
+```
 ## Prerequisites
 
 - Nginx Proxy Manager is running and accessible

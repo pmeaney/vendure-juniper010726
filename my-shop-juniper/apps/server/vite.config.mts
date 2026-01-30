@@ -25,7 +25,10 @@ export default defineConfig({
             // and custom fields that are configured.
             vendureConfigPath: pathToFileURL('./src/vendure-config.ts'),
             // Points to the location of your Vendure server.
-            api: { host: 'http://localhost', port: 3000 },
+            api: { 
+              host: process.env.VENDURE_API_HOST || 'http://localhost', 
+              port: 3000 
+            },
             // When you start the Vite server, your Admin API schema will
             // be introspected and the types will be generated in this location.
             // These types can be used in your dashboard extensions to provide

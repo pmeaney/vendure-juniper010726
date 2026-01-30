@@ -14,6 +14,8 @@ postgres_defaults: |
   POSTGRES_PASSWORD=vendure_db_pass
 
 # these items are the same for Vendure Server & Vendure Worker
+# I am adding VENDURE_API_HOST-- and setting it to my live URL's admin subdomain.
+# VENDURE_API_HOST=https://admin.mySite.com 
 vendure_srv_wrk_defaults: |
   APP_ENV=prod
   PORT=3000
@@ -26,17 +28,18 @@ vendure_srv_wrk_defaults: |
   DB_USERNAME=vendure_db_user
   DB_PASSWORD=vendure_db_pass
   DB_SCHEMA=public
+  VENDURE_API_HOST=https://admin.mySite.com 
 
 # For Prod, NEXT_PUBLIC_SITE_URL must be https, not http.
 #   Used for: SEO metadata (canonical URLs), Open Graph tags for social media, Sitemap generation, Redirects
 # In the Repo secret env vars, be sure to update:
-#   NEXT_PUBLIC_SITE_URL -> the actual site URL
+#   NEXT_PUBLIC_SITE_URL -> the actual site URL.  Note: In my case, I'll have a separate Astro-based CMS site at the main site (mySite.com), and I'll keep the shop at shop.mySite.com
 # Re: VENDURE_SHOP_API_URL -- this item, on prod, is used internally by the containerized apps, so it should be ok as is.
 # SKIP_NEXTJS_BUILD -- not needed in prod secrets. Used so NextJS doesn't build during the Docker image build process (where vendure-server is inaccessible), but instead builds during container startup (when vendure-server is accessible via network)
 vendure_storefront_defaults: |
   VENDURE_SHOP_API_URL=http://vendure-server:3000/shop-api
   VENDURE_CHANNEL_TOKEN=__default_channel__
-  NEXT_PUBLIC_SITE_URL=https://example.com
-  NEXT_PUBLIC_SITE_NAME=my-vendure-shop
+  NEXT_PUBLIC_SITE_URL=https://shop.mySite.com
+  NEXT_PUBLIC_SITE_NAME="My Vendure Shop"
   REVALIDATION_SECRET=e8kEmYajEeIePbtnT30zCTT34ZpNvyZpRyQRASVSuxI&#x3D;
   SKIP_NEXTJS_BUILD=true
