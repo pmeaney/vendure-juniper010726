@@ -2,6 +2,8 @@ import { vendureDashboardPlugin } from '@vendure/dashboard/vite';
 import { join, resolve } from 'path';
 import { pathToFileURL } from 'url';
 import { defineConfig } from 'vite';
+import 'dotenv/config';
+const IS_DEV = process.env.APP_ENV === 'dev';
 
 export default defineConfig({
     // By default, Vite binds to localhost (127.0.0.1).
@@ -25,10 +27,15 @@ export default defineConfig({
             // and custom fields that are configured.
             vendureConfigPath: pathToFileURL('./src/vendure-config.ts'),
             // Points to the location of your Vendure server.
-            api: { 
-              host: process.env.VENDURE_API_HOST || 'http://localhost', 
-              port: 3000 
-            },
+            api: IS_DEV
+              ? {
+                  host: 'http://localhost',
+                  port: 3000,
+                }
+              : {
+                  host: process.env.VENDURE_API_HOST,
+                  // 🚫 NO port in prod.  If you provide port, it will be used.
+                },
             // When you start the Vite server, your Admin API schema will
             // be introspected and the types will be generated in this location.
             // These types can be used in your dashboard extensions to provide
