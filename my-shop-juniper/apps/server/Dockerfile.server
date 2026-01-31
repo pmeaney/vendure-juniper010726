@@ -46,11 +46,20 @@ CMD ["npm", "run", "dev"]
 
 # Builder stage - builds the production app
 FROM base AS builder
+
+# Accept build arg FIRST (before any RUN commands that need it)
+# Dashboard needs API endpoint at build time (not runtime like other env vars)
+# Passed as build arg to keep production URL out of public repo
+ARG VENDURE_API_HOST=http://localhost
+ENV VENDURE_API_HOST=$VENDURE_API_HOST
+
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
 RUN npm run build
-# only Server needs the dashboard built-- not worker
+
+# Build dashboard (now VENDURE_API_HOST is available)
 RUN npm run build:dashboard
+
 # Copy migrations source (TypeORM needs them)
 RUN mkdir -p ./dist/migrations
 RUN cp -r ./src/migrations/* ./dist/migrations/ 2>/dev/null || true

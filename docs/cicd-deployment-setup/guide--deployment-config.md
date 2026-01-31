@@ -31,15 +31,28 @@ Set up the following **repository secrets** in the repo.  Be sure that the ones 
 
 ### Secrets to upload
 
+#### Environment Secrets
+
+Place these into an environment named "production" in Repo Secrets > Actions.
+
    - `POSTGRES__SECRET_ENV_FILE`: environment variables for Database  
      - Be sure to setup a unique password in the prod env var file
    - `STOREFRONT__SECRET_ENV_FILE`: environment variables for storefront.  
      - Be sure to check out the `.env.local.storefront.example-guided` file-- because you'll want to generate a unique REVALIDATION_SECRET via the command `openssl rand -base64 32` for the prod secret.
    - `SRV_WRK__SECRET_ENV_FILE`: environment variables for vendure server & worker (one file, used for both)
      - Be sure to set new, unique values for SUPERADMIN_USERNAME, SUPERADMIN_PASSWORD, and that the DB_ items match the ones from the `POSTGRES__SECRET_ENV_FILE`.  And set APP_ENV to 'prod' instead of 'dev'.  For more info: https://docs.vendure.io/guides/deployment/production-configuration/ (note the use of 'prod' as the env name, in the info regarding the hardening plugin-- which is why I assume it should be 'prod' and not 'production'.)
+
+#### Repository Secrets
+
+- VENDURE_API_HOST: The URL (including subdomain) for the Vendure admin dashboard, e.g., `https://admin.myshop.com`
+  The URL (including subdomain) for the Vendure admin dashboard, e.g., `https://admin.myshop.com`
+  - **Why do we need this as a separate secret?**
+  - The dashboard is built during `docker build` using Vite, and it needs to know the production API endpoint at build time. Most environment variables are injected during `docker run` (too late for the build), and default env vars in `.github/defaults/env-defaults.yml` would be public if this repo is public. To keep the real production URL private while making this repo portfolio-ready, we pass it as a build arg: `--build-arg VENDURE_API_HOST="${VENDURE_API_HOST}"` during the image build step.
+
+**The following ones are based on the Debian Server creation process**
    - `LINUX_BOTCICDGHA_USERNAME`: Username for SSH access
    - `LINUX_SERVER_IPADDRESS`: IP address of deployment server
-   - `GHPATCICD_VendureRepo_010726`: GitHub Personal Access Token with repository, workflow, and package read/write permissions.  (Workflow-- because we'll have a Main workflow and subworkflows.  Main workflow will output values from the subworkflows into a CICD summary screen.  The Main workflow basically orchestrates its sub workflows)
+   - `GHPATCICD_VENDUREREPO_010726`: GitHub Personal Access Token with repository, workflow, and package read/write permissions.  (Workflow-- because we'll have a Main workflow and subworkflows.  Main workflow will output values from the subworkflows into a CICD summary screen.  The Main workflow basically orchestrates its sub workflows)
    - `LINUX_SSH_PRIVATE_KEY_CICD`: SSH key for deployment server access.  See below for steps to set this up.
 
 ## Setup of LINUX_SSH_PRIVATE_KEY_CICD
