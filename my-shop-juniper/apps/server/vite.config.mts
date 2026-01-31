@@ -35,6 +35,10 @@ export default defineConfig({
               : {
                   host: process.env.VENDURE_API_HOST,
                   // 🚫 NO port in prod.  If you provide port, it will be used.
+                  // In production, specifying an API port in the Vite dashboard config forces the
+                  // compiled Admin UI to call host:port directly, bypassing the reverse proxy and
+                  // causing CORS delays. This change aligns dashboard API config with APP_ENV:
+                  // use host + port in dev, and same-origin API paths in prod.
                 },
             // When you start the Vite server, your Admin API schema will
             // be introspected and the types will be generated in this location.
