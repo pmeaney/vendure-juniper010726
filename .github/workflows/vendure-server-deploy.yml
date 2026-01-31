@@ -14,6 +14,8 @@ on:
         required: true
       SRV_WRK__SECRET_ENV_FILE:
         required: true
+      VENDURE_API_HOST:
+        required: true
     outputs:
       had_changes:
         description: "Whether changes were detected"
@@ -271,11 +273,14 @@ jobs:
       - name: Build Image with Default Secrets, then Publish
         if: steps.check-changes.outputs.changes == 'true'
         id: build-publish
+        env:
+          VENDURE_API_HOST: ${{ secrets.VENDURE_API_HOST }}
         run: |
           echo "Building and publishing server Docker image..."
 
           # Build the Vendure Server Docker image with default env file
           docker build \
+            --build-arg VENDURE_API_HOST="${VENDURE_API_HOST}" \
             -f my-shop-juniper/apps/server/Dockerfile.server \
             --target prod \
             --no-cache \

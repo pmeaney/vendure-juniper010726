@@ -35,7 +35,7 @@ jobs:
       LINUX_SERVER_IPADDRESS: ${{ secrets.LINUX_SERVER_IPADDRESS }}
       GHPAT_AS_CICD_SECRET: ${{ secrets.GHPATCICD_VendureRepo_010726 }}
       SRV_WRK__SECRET_ENV_FILE: ${{ secrets.SRV_WRK__SECRET_ENV_FILE }}
-
+      VENDURE_API_HOST: ${{ secrets.VENDURE_API_HOST }}
   # # Worker deployment (depends on Server)
   worker:
     needs: server
