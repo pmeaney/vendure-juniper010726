@@ -280,6 +280,7 @@ jobs:
 
           # Build the Vendure Server Docker image with default env file
           docker build \
+            --build-arg APP_ENV=prod \
             --build-arg VENDURE_API_HOST="${VENDURE_API_HOST}" \
             -f my-shop-juniper/apps/server/Dockerfile.server \
             --target prod \

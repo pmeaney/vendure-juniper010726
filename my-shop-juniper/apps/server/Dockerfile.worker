@@ -54,6 +54,11 @@ FROM base AS prod
 
 ENV NODE_ENV=production
 
+# Probably dont need this in Worker, but for consistency we will include it.
+# Environment intent (used across services for dev vs prod behavior)
+ARG APP_ENV=prod
+ENV APP_ENV=$APP_ENV
+
 # Create non-root user for security
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 vendure

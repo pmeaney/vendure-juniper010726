@@ -53,6 +53,12 @@ FROM base AS builder
 ARG VENDURE_API_HOST=http://localhost
 ENV VENDURE_API_HOST=$VENDURE_API_HOST
 
+# IMPORTANT:
+# APP_ENV must be set at build time so the Admin Dashboard
+# compiles with the correct API host and does not bake dev URLs.
+ARG APP_ENV=prod
+ENV APP_ENV=$APP_ENV
+
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
 RUN npm run build

@@ -279,6 +279,7 @@ jobs:
 
           # Build the Vendure Worker Docker image with default env file
           docker build \
+            --build-arg APP_ENV=prod \
             -f my-shop-juniper/apps/server/Dockerfile.worker \
             --target prod \
             --no-cache \
