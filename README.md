@@ -4,6 +4,12 @@ This project is a Vendure ecommerce application. It's containerized (Docker) for
 
 ## Version Benchmarks
 
+---
+
+---
+
+---
+
 ### Note: Local Dev has fallen out of sync. TO DO: Get local dev working again (via docker compose)
 
 **v1.0 - Local Development** ✅ (01/22/26 - b7f2b9e - v1.0-local-dev)
@@ -28,6 +34,12 @@ git push origin v1.0-local-dev
 - 📋 Apply for PayPal Business account (immediate-5 days)
 - 📋 Prepare compliance docs (Privacy Policy, Terms of Service, Refund Policy)
 
+---
+
+---
+
+---
+
 **v2.0 - Prototype Production** ✅ (1/30/26 - 73060a4 - v2.0-prototype-prod)
 
 - ✅ CI/CD pipeline functional
@@ -41,6 +53,52 @@ git push origin v1.0-local-dev
 git tag -a v2.0-prototype-prod -m "Prototype production deployment complete"
 git push origin v2.0-prototype-prod
 ```
+
+---
+
+---
+
+---
+
+## **v2.1 - Local Parity & Production Simulation** 📋 (Date: TBD - SHA: TBD - v2.1-fix-dev-add-prodparity)
+
+- 📋 Unified naming taxonomy across environments (`vendure-db`, `vendure-server`, `vendure-worker`, `vendure-storefront`, `vendure-network`)
+- 📋 Standardized PostgreSQL version (Postgres 17) across local & production
+- 📋 Restored local development stability after drift from production
+- 📋 Introduced **production simulation mode** (prod-sim Docker Compose)
+- 📋 Clearly separated development ergonomics from production correctness
+
+### Environment Modes Introduced
+
+| Mode       | Purpose                                                        |
+| ---------- | -------------------------------------------------------------- |
+| local      | Developer ergonomics (hot reload, bind mounts, fast iteration) |
+| prod-sim   | Production parity validation (real build, real topology)       |
+| production | Live deployment on server                                      |
+
+### Why This Matters
+
+Local development is optimized for **speed and iteration**.
+
+Production simulation is optimized for **correctness and parity**.
+
+- Dev answers: _“Does my code change work?”_
+- Prod-sim answers: _“Will this behave correctly in production?”_
+
+v2.1 strengthens deployment confidence before v3 hardening and payment activation.
+
+It does not add new business functionality — it hardens the foundation.
+
+```bash
+git tag -a v2.1-fix-dev-add-prodparity -m "Fix local env & add production simulation parity"
+git push origin v2.1-fix-dev-add-prodparity
+```
+
+---
+
+---
+
+---
 
 **Between v2.0 and v3.0 - Essential Security & Payment Activation:**
 

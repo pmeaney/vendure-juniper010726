@@ -1,8 +1,8 @@
 # This is for local dev (e.g. laptop) development
-# Simplified - runs on localhost, no Docker networks needed
+# Simplified - runs on localhost, using the implicit bridge network
 services:
   v-db-juniper010726:
-    image: postgres:16-alpine
+    image: postgres:17
     container_name: v-db-juniper010726
     env_file:
       - ./v-db-juniper010726/.env.local.db.example
@@ -13,6 +13,8 @@ services:
       - ./v-db-juniper010726/pg-data-vendure-juniper:/var/lib/postgresql/data
 
   v-srv-juniper010726:
+    depends_on:
+      - v-db-juniper010726
     build:
       context: ./my-shop-juniper/apps/server
       dockerfile: Dockerfile.server
@@ -27,12 +29,16 @@ services:
       # - /usr/src/app/node_modules # anonymous volume
       # - /usr/src/app/dist         # anonymous volume
       # going with named volumes instead of anonymous volumes.  The anon volumes should have overriden the bind mount for their paths, but they aren't always reliable
-      - server-node-modules:/usr/src/app/node_modules  # ← Named
-      - server-dist:/usr/src/app/dist                   # ← Named
+      - server-node-modules:/usr/src/app/node_modules # ← Named
+      - server-dist:/usr/src/app/dist # ← Named
     env_file:
+      # vendure-config expects it to be ".env" so leaving it as that for simplicity. Just know, this is just an unsecure, local, example .env file.
+      # for the default prod env vars, check .github/defaults/env-defaults.yml -- it contains the env vars used to build the docker image with. and the secure prod env vars are stored in the github repo secrets
       - ./my-shop-juniper/apps/server/.env
 
   v-wrk-juniper010726:
+    depends_on:
+      - v-db-juniper010726
     build:
       context: ./my-shop-juniper/apps/server
       dockerfile: Dockerfile.worker
@@ -45,18 +51,24 @@ services:
       # - /usr/src/app/node_modules  # anonymous volume
       # - /usr/src/app/dist            # anonymous volume
       # going with named volumes instead of anonymous volumes.  The anon volumes should have overriden the bind mount for their paths, but they aren't always reliable
-      - worker-node-modules:/usr/src/app/node_modules  # ← Named
-      - worker-dist:/usr/src/app/dist                   # ← Named
+      - worker-node-modules:/usr/src/app/node_modules # ← Named
+      - worker-dist:/usr/src/app/dist # ← Named
     env_file:
+      # vendure-config expects it to be ".env" so leaving it as that for simplicity. Just know, this is just an unsecure, local, example .env file.
+      # for the default prod env vars, check .github/defaults/env-defaults.yml -- it contains the env vars used to build the docker image with. and the secure prod env vars are stored in the github repo secrets
       - ./my-shop-juniper/apps/server/.env
 
   v-storefront-juniper010726:
+    depends_on:
+      - v-db-juniper010726
+      - v-srv-juniper010726
+      - v-wrk-juniper010726
     build:
       context: ./my-shop-juniper/apps/storefront
       dockerfile: Dockerfile.storefront
       target: dev # runs dev stage in its Dockerfile-- which includes CMD. Prod stage will be run via CICD
     ports:
-      - 3001:3001  # Storefront accessible at localhost:3001
+      - 3001:3001 # Storefront accessible at localhost:3001
     volumes:
       # Mount source code for hot reload
       - ./my-shop-juniper/apps/storefront:/app # bind mount
@@ -64,8 +76,8 @@ services:
       # - /app/node_modules # anonymous volume
       # - /app/.next        # anonymous volume
       # going with named volumes instead of anonymous volumes.  The anon volumes should have overriden the bind mount for their paths, but they aren't always reliable
-      - storefront-node-modules:/app/node_modules  # ← Named volume
-      - storefront-next:/app/.next                 # ← Named volume
+      - storefront-node-modules:/app/node_modules # ← Named volume
+      - storefront-next:/app/.next # ← Named volume
     env_file:
       - ./my-shop-juniper/apps/storefront/.env.local.storefront.example
 

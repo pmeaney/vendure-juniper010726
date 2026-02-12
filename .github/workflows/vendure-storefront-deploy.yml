@@ -264,7 +264,7 @@ jobs:
           echo "BUILT=true" >> $GITHUB_ENV
           echo "PUSHED=true" >> $GITHUB_ENV
           echo "build_status=success" >> $GITHUB_OUTPUT
-  
+
       - name: SSH in and Deploy Storefront image with Prod Secrets
         if: steps.check-changes.outputs.changes == 'true'
         id: step-deploy-storefront
