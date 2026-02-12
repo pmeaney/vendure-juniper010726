@@ -11,9 +11,28 @@
 #     if you get this error:
 # npm error code ERR_INVALID_ARG_TYPE
 # npm error The "path" argument must be of type string or an instance of Buffer or URL. Received null
-#     Then run this:
+#     Then delete all node_modules dir from the projecct (server and storefront) run this:
 # sudo chown -R $(id -u):$(id -g) my-shop-juniper
 #     then run the shell file again.
+
+# Why?
+# This script runs:
+
+# docker run --rm \
+#   -v "$(pwd)/my-shop-juniper/apps/server:/usr/src/app" \
+#   -w /usr/src/app \
+#   node:20-slim \
+#   sh -c "npm install"
+
+# Inside the container, the user is root.
+# So npm writes files as root into your Mac directory.
+# That’s why you needed:
+
+# sudo chown -R $(id -u):$(id -g)
+
+# So, if a previous install partially failed,
+# you now have a half-installed node_modules owned by root.
+# And npm hates half-installed directories.
 
 set -e  # Exit on any error
 
