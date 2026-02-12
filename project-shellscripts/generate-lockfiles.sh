@@ -18,7 +18,8 @@ docker run --rm \
   -v "$(pwd)/my-shop-juniper/apps/server:/usr/src/app" \
   -w /usr/src/app \
   node:20-slim \
-  sh -c "npm install && chown $(id -u):$(id -g) package-lock.json"
+  sh -c "sh -c npm install --package-lock-only"
+  # sh -c "npm install && chown $(id -u):$(id -g) package-lock.json"
 echo "✅ Server package-lock.json generated"
 echo ""
 
@@ -28,7 +29,8 @@ docker run --rm \
   -v "$(pwd)/my-shop-juniper/apps/storefront:/app" \
   -w /app \
   node:20-slim \
-  sh -c "npm install && chown $(id -u):$(id -g) package-lock.json"
+  sh -c "sh -c npm install --package-lock-only"
+  # sh -c "npm install && chown $(id -u):$(id -g) package-lock.json"
 echo "✅ Storefront package-lock.json generated"
 echo ""
 

@@ -3,8 +3,8 @@ name: Vendure Deployment Pipeline
 
 on:
   push:
-    # branches: [blah] # uncomment for when dont want to run CICD on commit to main
-    branches: [main]
+    branches: [blah] # uncomment for when dont want to run CICD on commit to main
+    # branches: [main]
 
 permissions:
   contents: read
@@ -80,7 +80,7 @@ jobs:
         continue-on-error: true
         uses: actions/download-artifact@v4
         with:
-          pattern: '*-last-deployed-commit'
+          pattern: "*-last-deployed-commit"
           path: ./deployment-markers
           merge-multiple: true
 
@@ -112,7 +112,7 @@ jobs:
 
           # Server
           echo "## 🖥️ Server (vendure-server-juniper010726)" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ -f "./deployment-markers/server-last-commit.txt" ]; then
             LAST_COMMIT=$(cat ./deployment-markers/server-last-commit.txt)
             LAST_SHORT=$(git rev-parse --short $LAST_COMMIT)
@@ -123,14 +123,14 @@ jobs:
             LAST_DATE="First deployment"
             CHANGES="N/A"
           fi
-          
+
           echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
           echo "| **Last deployed** | \`${LAST_SHORT}\` (${LAST_DATE}) |" >> $GITHUB_STEP_SUMMARY
           echo "| **Changes detected** | ${{ needs.server.outputs.had_changes }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Files changed** | ${CHANGES} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Action taken** | ${{ needs.server.outputs.action_taken }} |" >> $GITHUB_STEP_SUMMARY
-          
+
           if [[ "${{ needs.server.outputs.had_changes }}" == "true" ]]; then
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "**Changed files:**" >> $GITHUB_STEP_SUMMARY
@@ -146,7 +146,7 @@ jobs:
 
           # Worker
           echo "## ⚙️ Worker (vendure-worker-juniper010726)" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ -f "./deployment-markers/worker-last-commit.txt" ]; then
             LAST_COMMIT=$(cat ./deployment-markers/worker-last-commit.txt)
             LAST_SHORT=$(git rev-parse --short $LAST_COMMIT)
@@ -157,14 +157,14 @@ jobs:
             LAST_DATE="First deployment"
             CHANGES="N/A"
           fi
-          
+
           echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
           echo "| **Last deployed** | \`${LAST_SHORT}\` (${LAST_DATE}) |" >> $GITHUB_STEP_SUMMARY
           echo "| **Changes detected** | ${{ needs.worker.outputs.had_changes }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Files changed** | ${CHANGES} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Action taken** | ${{ needs.worker.outputs.action_taken }} |" >> $GITHUB_STEP_SUMMARY
-          
+
           if [[ "${{ needs.worker.outputs.had_changes }}" == "true" ]]; then
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "**Changed files:**" >> $GITHUB_STEP_SUMMARY
@@ -180,7 +180,7 @@ jobs:
 
           # Storefront
           echo "## 🌐 Storefront (vendure-storefront-juniper010726)" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ -f "./deployment-markers/storefront-last-commit.txt" ]; then
             LAST_COMMIT=$(cat ./deployment-markers/storefront-last-commit.txt)
             LAST_SHORT=$(git rev-parse --short $LAST_COMMIT)
@@ -191,14 +191,14 @@ jobs:
             LAST_DATE="First deployment"
             CHANGES="N/A"
           fi
-          
+
           echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
           echo "| **Last deployed** | \`${LAST_SHORT}\` (${LAST_DATE}) |" >> $GITHUB_STEP_SUMMARY
           echo "| **Changes detected** | ${{ needs.storefront.outputs.had_changes }} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Files changed** | ${CHANGES} |" >> $GITHUB_STEP_SUMMARY
           echo "| **Action taken** | ${{ needs.storefront.outputs.action_taken }} |" >> $GITHUB_STEP_SUMMARY
-          
+
           if [[ "${{ needs.storefront.outputs.had_changes }}" == "true" ]]; then
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "**Changed files:**" >> $GITHUB_STEP_SUMMARY
