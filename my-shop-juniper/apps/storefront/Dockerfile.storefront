@@ -21,7 +21,7 @@ RUN if [ ! -f package-lock.json ]; then \
     fi
 RUN npm ci
 
-# Development stage (standalone - generates own lockfile)
+# Development stage (standalone)
 FROM base AS dev
 COPY package.json package-lock.json* ./
 # Fail if package-lock.json doesn't exist
@@ -39,7 +39,6 @@ RUN if [ ! -f package-lock.json ]; then \
       exit 1; \
     fi
 RUN npm ci
-
 COPY . .
 EXPOSE 3001
 ENV PORT=3001
