@@ -11,7 +11,7 @@ dist/
 .pnpm-store/
 
 # Postgres data directory
-**/pg-data-vendure-juniper/
+**/pg-data/
 
 # Environment files -- (prod env vars are in secrets manager, hence leaving these others in)
 # .env

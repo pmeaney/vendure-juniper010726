@@ -18,7 +18,11 @@ docker run --rm \
   -v "$(pwd)/my-shop-juniper/apps/server:/usr/src/app" \
   -w /usr/src/app \
   node:20-slim \
-  sh -c "sh -c npm install --package-lock-only"
+  sh -c "sh -c npm install"
+  # Note: This below `--package-lock-only` would be great.. Except, we need the node_modules locally on laptop bc they are referenced by typescript (i.e. its types).
+  # So, for sanity, we'll allow node_modules to stay local (rather than just be in the containers)
+  ##### For more info, see ./docs/prod-parity-without-project-duplication.md
+  # sh -c "sh -c npm install --package-lock-only"
   # sh -c "npm install && chown $(id -u):$(id -g) package-lock.json"
 echo "✅ Server package-lock.json generated"
 echo ""
@@ -29,7 +33,11 @@ docker run --rm \
   -v "$(pwd)/my-shop-juniper/apps/storefront:/app" \
   -w /app \
   node:20-slim \
-  sh -c "sh -c npm install --package-lock-only"
+  sh -c "sh -c npm install"
+  # Note: This below `--package-lock-only` would be great.. Except, we need the node_modules locally on laptop bc they are referenced by typescript (i.e. its types).
+  # So, for sanity, we'll allow node_modules to stay local (rather than just be in the containers)
+  ##### For more info, see ./docs/prod-parity-without-project-duplication.md
+  # sh -c "sh -c npm install --package-lock-only"
   # sh -c "npm install && chown $(id -u):$(id -g) package-lock.json"
 echo "✅ Storefront package-lock.json generated"
 echo ""
