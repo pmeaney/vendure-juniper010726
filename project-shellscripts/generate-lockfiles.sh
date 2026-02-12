@@ -1,11 +1,19 @@
 #!/bin/bash
 # generate-lockfiles.sh
 
+##################         READ THIS FIRST. !!!!!!!!!!!!!!! ################
 # This file is to generate npm package-lock.json files from within containers.
 # This way all their dependencies will be Linux -based, rather than based on the OS of the developer's laptop.
 # To run it, run these two lines:
 # chmod +x generate-lockfiles.sh
 # ./generate-lockfiles.sh
+#
+#     if you get this error:
+# npm error code ERR_INVALID_ARG_TYPE
+# npm error The "path" argument must be of type string or an instance of Buffer or URL. Received null
+#     Then run this:
+# sudo chown -R $(id -u):$(id -g) my-shop-juniper
+#     then run the shell file again.
 
 set -e  # Exit on any error
 
