@@ -27,6 +27,8 @@
     "@types/node": "^25.1.0",
     "@vendure/cli": "^3.5.2",
     "concurrently": "9.2.1",
-    "typescript": "5.8.2"
+    "typescript": "5.8.2",
+    "@swc/core": "^1.15.11",
+    "@lingui/swc-plugin": "^5.11.0"
   }
 }
