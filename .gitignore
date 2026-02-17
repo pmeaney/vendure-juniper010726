@@ -4,6 +4,8 @@
 # Node files (ignore anywhere)
 **/node_modules/
 
+**/.tanstack
+
 # Build directories
 build/
 dist/

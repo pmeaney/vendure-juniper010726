@@ -4,8 +4,8 @@
 # This file is to generate npm package-lock.json files from within containers.
 # This way all their dependencies will be Linux-based, rather than based on the OS of the developer's laptop.
 # To run it, run these two lines:
-# chmod +x generate-lockfiles.sh
-# ./generate-lockfiles.sh
+# chmod +x ./project-shellscripts/generate-lockfiles.sh
+# ./project-shellscripts/generate-lockfiles.sh
 
 set -e  # Exit on any error
 
