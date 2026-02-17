@@ -15,12 +15,11 @@ So, we need node_modules to be generated from within docker containers, otherwis
 
 ### Note: Local Dev has fallen out of sync. TO DO: Get local dev working again (via docker compose)
 
-**v1.0 - Local Development** ✅ (01/22/26 - b7f2b9e - v1.0-local-dev)
+**v1.0 - Local Development** ✅ (02/17/26 - 00a281f - v1.0-local-dev)
 
 - Fully functional local development environment
 - Docker Compose setup working
 - Basic configuration complete
-- Payment integration: Stripe & PayPal test mode configured
 
 ```bash
 git tag -a v1.0-local-dev -m "Local development environment complete"
