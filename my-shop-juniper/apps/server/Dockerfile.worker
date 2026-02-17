@@ -43,7 +43,7 @@ RUN npm ci
 # Required because Vendure dev process spawns `ps`
 RUN apt-get update && apt-get install -y procps
 COPY . .
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "dev:worker"]
 
 # Builder stage - builds the production app
 FROM base AS builder

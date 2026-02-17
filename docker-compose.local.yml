@@ -31,8 +31,9 @@ services:
       # - /usr/src/app/dist         # anonymous volume
       # going with named volumes instead of anonymous volumes.  The anon volumes should have overriden the bind mount for their paths, but they aren't always reliable
       ############
-      # - server-node-modules:/usr/src/app/node_modules # ← Named
-      # - server-dist:/usr/src/app/dist # ← Named
+      - server-node-modules:/usr/src/app/node_modules # ← Named
+      - server-dist:/usr/src/app/dist # ← Named
+      - server-tanstack:/usr/src/app/.tanstack # ← Named
     env_file:
       # vendure-config expects it to be ".env" so leaving it as that for simplicity. Just know, this is just an unsecure, local, example .env file.
       # for the default prod env vars, check .github/defaults/env-defaults.yml -- it contains the env vars used to build the docker image with. and the secure prod env vars are stored in the github repo secrets
@@ -56,8 +57,8 @@ services:
       # - /usr/src/app/dist            # anonymous volume
       # going with named volumes instead of anonymous volumes.  The anon volumes should have overriden the bind mount for their paths, but they aren't always reliable
       ############
-      # - worker-node-modules:/usr/src/app/node_modules # ← Named
-      # - worker-dist:/usr/src/app/dist # ← Named
+      - worker-node-modules:/usr/src/app/node_modules # ← Named
+      - worker-dist:/usr/src/app/dist # ← Named
     env_file:
       # vendure-config expects it to be ".env" so leaving it as that for simplicity. Just know, this is just an unsecure, local, example .env file.
       # for the default prod env vars, check .github/defaults/env-defaults.yml -- it contains the env vars used to build the docker image with. and the secure prod env vars are stored in the github repo secrets
@@ -84,20 +85,21 @@ services:
       # - /app/.next        # anonymous volume
       # going with named volumes instead of anonymous volumes.  The anon volumes should have overriden the bind mount for their paths, but they aren't always reliable
       ############
-      # - storefront-node-modules:/app/node_modules # ← Named volume
-      # - storefront-next:/app/.next # ← Named volume
+      - storefront-node-modules:/app/node_modules # ← Named volume
+      - storefront-next:/app/.next # ← Named volume
     env_file:
       - ./my-shop-juniper/apps/storefront/.env.local.storefront.example
     networks:
       - vendure-network
 
-# volumes:
-# storefront-node-modules:
-# storefront-next:
-# server-node-modules:
-# server-dist:
-# worker-node-modules:
-# worker-dist:
+volumes:
+  storefront-node-modules:
+  storefront-next:
+  server-node-modules:
+  server-dist:
+  server-tanstack:
+  worker-node-modules:
+  worker-dist:
 
 networks:
   vendure-network:

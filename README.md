@@ -2,12 +2,8 @@
 
 This project is a Vendure ecommerce application. It's containerized (Docker) for easy CI/CD deployment and includes docker-compose for local development.
 
-## WHAT NOT TO DO
-
-- Do not run `npm install` locally.
-- Because this is a fully Container-oriented project.
-- Only run: ./project-shellscripts/generate-lockfiles.sh
-- That will generate the `node_modules` directories from within appropriate containers, so that all the dependencies are container oriented.
+This project is container oriented.
+So, we need node_modules to be generated from within docker containers, otherwise our package-lock.json files-- used by the prod deployment-- wont contain linux dependencies but will instead contain macos dependencies.
 
 ## Version Benchmarks
 
