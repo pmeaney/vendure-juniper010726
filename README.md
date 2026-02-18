@@ -28,7 +28,7 @@ docker compose -f docker-compose.local.yml up
 #                        http://localhost:3000/admin-api     (Admin API)
 
 # Stop w/ control-c, and then cleanup with:
-# docker compose -f docker-compose.local.yml down -v`
+# docker compose -f docker-compose.local.yml down -v
 ```
 
 To deploy via prod requires a bit of setup:
