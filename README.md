@@ -26,6 +26,9 @@ docker compose -f docker-compose.local.yml up
 # Admin Dashboard:       http://localhost:5173/dashboard
 # Vendure Server API:    http://localhost:3000/shop-api      (Shop API)
 #                        http://localhost:3000/admin-api     (Admin API)
+
+# Stop w/ control-c, and then cleanup with:
+# docker compose -f docker-compose.local.yml down -v`
 ```
 
 To deploy via prod requires a bit of setup:
@@ -119,30 +122,6 @@ git push origin v3.0-production
 - 🌎 Logistics setup & testing, regulatory analysis
 - 📸 Product photography workflow
 - 📱 Marketing and launch
-
-## Run it locally:
-
-- Clone project
-- Generate Linux-compatible lockfiles:
-  - `chmod +x ./project-shellscripts/generate-lockfiles.sh`
-  - `./project-shellscripts/generate-lockfiles.sh`
-  - **Why:** Creates `package-lock.json` files with Linux-compatible binaries (required for Docker containers). This ensures dependencies like `lightningcss`_ work correctly in the containerized environment. (_ = see note "About platform-specific dependencies" in More Info section at bottom of readme)
-  - **When to run:**
-    - First time setting up the project (lockfiles don't exist in repo yet)
-    - After updating dependencies in `package.json`
-    - If you've deleted `package-lock.json` files
-- Start all services: `docker compose -f docker-compose.local.yml up --build`
-
-Access the application:
-
-- Storefront: http://localhost:3001
-- Admin/API: http://localhost:3000
-- Database: localhost:5432
-
-To clean up:
-
-- break out with control-c
-- `docker compose -f docker-compose.local.yml down -v`
 
 # Explanation of Project Components - Local Development
 
