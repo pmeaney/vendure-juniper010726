@@ -5,15 +5,35 @@ This project is a Vendure ecommerce application. It's containerized (Docker) for
 This project is container oriented.
 So, we need node_modules to be generated from within docker containers, otherwise our package-lock.json files-- used by the prod deployment-- wont contain linux dependencies but will instead contain macos dependencies.
 
+## How to run it:
+
+Run it locally via:
+
+```bash
+git clone https://github.com/pmeaney/vendure-juniper010726.git
+
+# set permissions to for shell script: generate-lockfiles.sh
+# the shell script spins up nodejs containers in order to generate package-lock.json files and node_modules which are oriented towards linux (for production parity).  There's at least one dependency which if built on MacOS will cause an error in the containers-- npm doesn't always perfectly resolve dependencies to the OS.
+# The problematic dependency is `lightningcss` — it's a native binary that compiles differently on macOS vs Linux, so a package-lock.json generated on a Mac can pull the wrong platform binary and break inside a Linux container.
+chmod +x ./project-shellscripts/generate-lockfiles.sh
+./project-shellscripts/generate-lockfiles.sh
+
+# run the local docker-compose.local.yml file
+docker compose -f docker-compose.local.yml up
+
+# Then, visit via Browser:
+# Storefront:            http://localhost:3001
+# Admin Dashboard:       http://localhost:5173/dashboard
+# Vendure Server API:    http://localhost:3000/shop-api      (Shop API)
+#                        http://localhost:3000/admin-api     (Admin API)
+```
+
+To deploy via prod requires a bit of setup:
+
+- See the CICD Deploy docs at `./docs/cicd-deployment-setup`
+- And the CICD files at `./.github/workflows`
+
 ## Version Benchmarks
-
----
-
----
-
----
-
-### Note: Local Dev has fallen out of sync. TO DO: Get local dev working again (via docker compose)
 
 **v1.0 - Local Development** ✅ (02/17/26 - 00a281f - v1.0-local-dev)
 
@@ -38,10 +58,6 @@ git push origin v1.0-local-dev
 
 ---
 
----
-
----
-
 **v2.0 - Prototype Production** ✅ (1/30/26 - 73060a4 - v2.0-prototype-prod)
 
 - ✅ CI/CD pipeline functional
@@ -55,50 +71,6 @@ git push origin v1.0-local-dev
 git tag -a v2.0-prototype-prod -m "Prototype production deployment complete"
 git push origin v2.0-prototype-prod
 ```
-
----
-
----
-
----
-
-## **v2.1 - Local Parity & Production Simulation** 📋 (Date: TBD - SHA: TBD - v2.1-fix-dev-add-prodparity)
-
-- 📋 Unified naming taxonomy across environments (`vendure-db`, `vendure-server`, `vendure-worker`, `vendure-storefront`, `vendure-network`)
-- 📋 Standardized PostgreSQL version (Postgres 17) across local & production
-- 📋 Restored local development stability after drift from production
-- 📋 Introduced **production simulation mode** (prod-sim Docker Compose)
-- 📋 Clearly separated development ergonomics from production correctness
-
-### Environment Modes Introduced
-
-| Mode       | Purpose                                                        |
-| ---------- | -------------------------------------------------------------- |
-| local      | Developer ergonomics (hot reload, bind mounts, fast iteration) |
-| prod-sim   | Production parity validation (real build, real topology)       |
-| production | Live deployment on server                                      |
-
-### Why This Matters
-
-Local development is optimized for **speed and iteration**.
-
-Production simulation is optimized for **correctness and parity**.
-
-- Dev answers: _“Does my code change work?”_
-- Prod-sim answers: _“Will this behave correctly in production?”_
-
-v2.1 strengthens deployment confidence before v3 hardening and payment activation.
-
-It does not add new business functionality — it hardens the foundation.
-
-```bash
-git tag -a v2.1-fix-dev-add-prodparity -m "Fix local env & add production simulation parity"
-git push origin v2.1-fix-dev-add-prodparity
-```
-
----
-
----
 
 ---
 
