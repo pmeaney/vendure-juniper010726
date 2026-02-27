@@ -23,14 +23,14 @@ echo "✅ Server package-lock.json generated"
 echo ""
 
 # Storefront
-echo "📦 Processing storefront..."
-docker run --rm \
-  -v "$(pwd)/my-shop-juniper/apps/storefront:/app" \
-  -w /app \
-  node:20-slim \
-  sh -c "npm install && chown -R $(id -u):$(id -g) ."
-echo "✅ Storefront package-lock.json generated"
-echo ""
+# echo "📦 Processing storefront..."
+# docker run --rm \
+#   -v "$(pwd)/my-shop-juniper/apps/storefront:/app" \
+#   -w /app \
+#   node:20-slim \
+#   sh -c "npm install && chown -R $(id -u):$(id -g) ."
+# echo "✅ Storefront package-lock.json generated"
+# echo ""
 
 echo "🎉 Done! Lockfiles are ready to commit."
 echo "Next steps:"

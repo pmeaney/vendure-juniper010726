@@ -3,10 +3,12 @@
 # Usage:
 # set permissions:
 #   `chmod +x  ./project-shellscripts/install-nodedep.sh`
-# install a dep called "sharp" into the project server dir:
-#   `./project-shellscripts/install-nodedep.sh server sharp`
-# install a dep called "some-package" into the project storefront dir: 
+# install a dep called "some-package1" into the project server dir: 
+#   `./project-shellscripts/install-nodedep.sh server some-package`
+# install a dep called "some-package2" into the project storefront dir: 
 #   `./project-shellscripts/install-nodedep.sh storefront some-package`
+# install a dev dep called "ts-node" into the project storefront dir: 
+#   `./project-shellscripts/install-nodedep.sh server "ts-node --save-dev"`
 
 set -e
 
