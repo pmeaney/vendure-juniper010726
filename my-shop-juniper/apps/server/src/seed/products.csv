@@ -1,0 +1,2 @@
+name,slug,description,assets,facets,optionGroups,optionValues,sku,price,taxCategory,stockOnHand,trackInventory
+"Alonso Quixano Classical Guitar No. 1","aq-c-1","A handmade classical guitar by luthier Alonso Quixano.","seed-fixtures/aq-c-1/01-front.jpg,seed-fixtures/aq-c-1/02-back.jpg,seed-fixtures/aq-c-1/03-side.jpg,seed-fixtures/aq-c-1/04-rosette.jpg,seed-fixtures/aq-c-1/05-headstock.jpg","Type:Classical",,,"aq-c-1",105000,Standard,1,TRUE
