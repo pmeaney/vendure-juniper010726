@@ -1,7 +1,12 @@
 #!/bin/bash
 # install-nodedep.sh
-# Usage: ./project-shellscripts/install-nodedep.sh server sharp
-# Usage: ./project-shellscripts/install-nodedep.sh storefront some-package
+# Usage:
+# set permissions:
+#   `chmod +x  ./project-shellscripts/install-nodedep.sh`
+# install a dep called "sharp" into the project server dir:
+#   `./project-shellscripts/install-nodedep.sh server sharp`
+# install a dep called "some-package" into the project storefront dir: 
+#   `./project-shellscripts/install-nodedep.sh storefront some-package`
 
 set -e
 
