@@ -2,33 +2,83 @@
 
 This document records the conventions and decisions made when creating the initial seed files for the online shop. It covers file structure, naming conventions, pricing, and data modeling decisions.
 
+## Docs:
+
+Offical my-shop mock data & seed files:
+
+- products.csv: https://github.com/vendurehq/vendure/blob/master/packages/core/mock-data/data-sources/products.csv
+- initial-data.ts: https://github.com/vendurehq/vendure/blob/master/packages/core/mock-data/data-sources/initial-data.ts
+
 ---
+
+🏗 Proper Mental Model
+
+Think of it like this:
+
+File Purpose
+initial-data.ts System setup
+products.csv Catalog content
+src/seed/assets/ Product image sources
+static/assets/ Vendure-managed storage
 
 ## File Structure
 
+NOTE: This was what ClaudeAI suggested. However it's incorrect. 'assets' dir is managed by vendure-- it processes files to setup optimized versions (thumbnails, original size, etc) So, dont place seed images there. Insteasd, we'll place them in seed/assets.
+
+We can still group them into directories (probably-- we'd just use the directory path prefix)
+
+To ensure that the populate function in the seed file finds the right directory for the seed media assets,
+I had to add this to vendure-config.ts:
+
+```javascript
+  importExportOptions: {
+    importAssetsDir: path.join(__dirname, "seed", "assets"),
+  },
 ```
+
+```
+So, we wouldn't do this:
+
 apps/server/
   src/
     seed.ts                        ← entry point, calls populate()
     seed/
       initial-data.ts              ← zones, countries, tax, shipping, collections
       products.csv                 ← dev fixture products (one row per variant)
-  static/
-    assets/
-      seed-fixtures/               ← placeholder media for dev fixtures
-        aq-c-1/
-          01-front.jpg
-          02-back.jpg
-          03-side.jpg
-          04-rosette.jpg
-          05-headstock.jpg
-        aq-f-1/
-        sp-c-1/
-        sp-f-1/
-        dt-c-1/
-```
+    static/
+      assets/
+        seed-fixtures/               ← placeholder media for dev fixtures
+          aq-c-1/
+            01-front.jpg
+            02-back.jpg
+            03-side.jpg
+            04-rosette.jpg
+            05-headstock.jpg
+          aq-f-1/
+          sp-c-1/
+          sp-f-1/
+          dt-c-1/
 
-`seed.ts` lives at the `src/` level and orchestrates both files. `initial-data.ts` and `products.csv` live together inside `src/seed/`. Media lives in `static/assets/seed-fixtures/` — outside of `src/` because it is binary content, not code.
+Instead, we'd do this:
+
+apps/server/
+  src/
+    seed.ts                        ← entry point, calls populate()
+    seed/
+      initial-data.ts              ← zones, countries, tax, shipping, collections
+      products.csv                 ← dev fixture products (one row per variant)
+    assets/
+      aq-c-1/
+        01-front.jpg
+        02-back.jpg
+        03-side.jpg
+        04-rosette.jpg
+        05-headstock.jpg
+      aq-f-1/
+      sp-c-1/
+      sp-f-1/
+      dt-c-1/
+```
 
 ---
 
@@ -199,3 +249,50 @@ The three fixture luthiers represent anonymized versions of real people and are 
 **Total: 3 luthiers, 5 guitars, 25 placeholder media files**
 
 These fixtures exist for local development only. They should never be seeded into production. Production catalog is populated manually through the Vendure admin dashboard.
+
+## How to run seed process
+
+Get the project containers started up, locally, e.g.:
+`docker compose -f docker-compose.local.yml up`
+
+Then run `npm run seed` within the server container:
+❯ docker exec -it vendure-juniper010726-vendure-server-1 npm run seed
+
+```bash
+# View db tables
+docker exec -it vendure-juniper010726-vendure-db-1 psql -U vendure_db_user -d vendure_db -c "\dt"
+# View products table:
+docker exec -it vendure-juniper010726-vendure-db-1 psql -U vendure_db_user -d vendure_db -c "SELECT * FROM product;"
+```
+
+Other command examples
+
+```bash
+# checking taxCategory data
+docker exec -it vendure-juniper010726-vendure-db-1 psql -U vendure_db_user -d vendure_db -c "SELECT * FROM tax_category;"
+
+```
+
+### Troubleshooting examples
+
+```bash
+# More of an IT troubleshooting command-- this is looking at the schema of the job_record table to get a sense of its column names
+docker exec -it vendure-juniper010726-vendure-db-1 psql -U vendure_db_user -d vendure_db -c "\d job_record"
+
+# Examining migration records
+docker exec -it vendure-juniper010726-vendure-db-1 psql -U vendure_db_user -d vendure_db -c 'SELECT id, "queueName", state, error FROM job_record ORDER BY id DESC LIMIT 10;'
+
+#  id |        queueName         |   state   | error
+# ----+--------------------------+-----------+-------
+#  10 | update-search-index      | COMPLETED |
+#   9 | apply-collection-filters | COMPLETED |
+#   8 | apply-collection-filters | COMPLETED |
+#   7 | apply-collection-filters | COMPLETED |
+#   6 | update-search-index      | COMPLETED |
+#   5 | update-search-index      | COMPLETED |
+#   4 | update-search-index      | COMPLETED |
+#   3 | apply-collection-filters | COMPLETED |
+#   2 | apply-collection-filters | COMPLETED |
+#   1 | apply-collection-filters | COMPLETED |
+# (10 rows)
+```

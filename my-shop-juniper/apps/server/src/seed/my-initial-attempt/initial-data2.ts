@@ -96,6 +96,7 @@ export const initialData: InitialData = {
           args: { facetValueNames: ["Electronics"], containsAny: false },
         },
       ],
+      assetPaths: ["test-photo-mouse.jpg"],
     },
     {
       name: "Computers",
@@ -106,6 +107,7 @@ export const initialData: InitialData = {
         },
       ],
       parentName: "Electronics",
+      assetPaths: ["laptop-image.jpg"],
     },
   ],
   countries: [
