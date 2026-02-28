@@ -76,7 +76,7 @@ export const config: VendureConfig = {
   // need to be updated. See the "Migrations" section in README.md.
   customFields: {},
   importExportOptions: {
-    importAssetsDir: path.join(__dirname, "seed", "assets"),
+    importAssetsDir: path.join(__dirname, "seeds", "assets"),
   },
   plugins: [
     GraphiqlPlugin.init(),

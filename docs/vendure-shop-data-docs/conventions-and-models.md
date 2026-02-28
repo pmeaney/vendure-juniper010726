@@ -12,19 +12,19 @@ Offical my-shop mock data & seed files:
 
 Think of it like this:
 
-| File               | Purpose                 |
-| ------------------ | ----------------------- |
-| `initial-data.ts`  | System setup            |
-| `products.csv`     | Catalog content         |
-| `src/seed/assets/` | Product image sources   |
-| `static/assets/`   | Vendure-managed storage |
+| File                | Purpose                 |
+| ------------------- | ----------------------- |
+| `initial-data.ts`   | System setup            |
+| `products.csv`      | Catalog content         |
+| `src/seeds/assets/` | Product image sources   |
+| `static/assets/`    | Vendure-managed storage |
 
 To ensure that the populate function in the seed file finds the right directory for the seed media assets,
 I had to add this to vendure-config.ts:
 
 ```javascript
   importExportOptions: {
-    importAssetsDir: path.join(__dirname, "seed", "assets"),
+    importAssetsDir: path.join(__dirname, "seeds", "assets"),
   },
 ```
 

@@ -32,7 +32,7 @@ I had to add this to vendure-config.ts:
 
 ```javascript
   importExportOptions: {
-    importAssetsDir: path.join(__dirname, "seed", "assets"),
+    importAssetsDir: path.join(__dirname, "seeds", "assets"),
   },
 ```
 

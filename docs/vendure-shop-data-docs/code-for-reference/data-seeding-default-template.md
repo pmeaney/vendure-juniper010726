@@ -4,7 +4,7 @@ Add the seed media asset directory into the vendure-config (`apps/server/src/ven
 
 ```js
 importExportOptions: {
-    importAssetsDir: path.join(__dirname, "seed", "assets"),
+    importAssetsDir: path.join(__dirname, "seeds", "assets"),
   },
 ```
 
