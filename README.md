@@ -79,28 +79,46 @@ git push origin v2.0-prototype-prod
 
 **Between v2.0 and v3.0 - Essential Security & Payment Activation:**
 
-_Application-Level (Vendure):_
+Between v2.0 and v3.0 – Essential Security & Payment Activation
+Application-Level (Vendure)
 
-- 📋 🔒 HardenPlugin configured (prevents GraphQL query attacks)
-- 📋 🔒 Rate limiting on API endpoints (prevent brute force)
+📋 🔒 HardenPlugin configured (GraphQL depth / cost limiting)
+📋 🔒 Rate limiting on API endpoints
+📋 🔒 Restrictive CORS configuration (production origins only)
 
-_Infrastructure-Level:_
+Infrastructure-Level
+🔒 Edge & Protection
 
-- 📋 🔒 Cloudflare integration (DDoS protection, CDN, SSL)
-- 📋 🔒 Basic Cloudflare WAF rules (5 free rules)
-- 📋 🔒 Database timezone verification (UTC)
-- 📋 🔒 Trust proxy configuration for Express
-- 📋 🔒 Weekly automated database backups
-- 📋 🔒 Uptime monitoring (UptimeRobot free tier)
-- 📋 🔒 Container resource limits (prevent runaway processes)
-- 📋 🔒 Error logging + alerting
+📋 🔒 Cloudflare integration (DNS, SSL, CDN)
+📋 🔒 Basic Cloudflare WAF rules
+📋 🔒 Trust proxy configuration for Express
+📋 🔒 Force HTTPS (redirect HTTP → HTTPS)
+📋 🔒 Secure + HttpOnly cookies verified
+📋 🔒 SameSite cookie policy verified
 
-_Payment Activation:_
+🔒 Data Integrity
 
-- 📋 💳 Switch Stripe to live mode (production API keys)
-- 📋 💳 Switch PayPal to live mode
-- 📋 💳 Test live transactions ($1 test purchases)
-- 📋 💳 Verify webhook handling in production
+📋 🔒 Database timezone verification (UTC)
+📋 🔒 Weekly automated database backups
+
+🔎 Observability & Incident Response
+
+📋 🔒 Error logging (structured logs or Sentry)
+📋 🔒 Alerting on 5xx errors
+📋 🔒 Uptime monitoring (UptimeRobot free tier)
+
+🔒 Runtime Safety
+
+📋 🔒 Container resource limits
+
+Payment Activation
+
+📋 💳 Switch Stripe to live mode (production API keys)
+📋 💳 Switch PayPal to live mode
+📋 💳 Test live transactions ($1 test purchases)
+📋 💳 Verify webhook handling in production (success, failure, refund)
+📋 🔒 Verify Stripe webhook signature validation
+📋 🔒 Verify PayPal webhook signature validation
 
 **v3.0 - Production Ready** 📋
 
