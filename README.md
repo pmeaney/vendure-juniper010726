@@ -93,6 +93,7 @@ _Infrastructure-Level:_
 - 📋 🔒 Weekly automated database backups
 - 📋 🔒 Uptime monitoring (UptimeRobot free tier)
 - 📋 🔒 Container resource limits (prevent runaway processes)
+- 📋 🔒 Error logging + alerting
 
 _Payment Activation:_
 
