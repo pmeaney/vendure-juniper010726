@@ -1,8 +1,8 @@
-import { bootstrap, runMigrations } from '@vendure/core';
-import { config } from './vendure-config';
-// can delete this comment-- it was added so CICD picks up code changes
+import { bootstrap, runMigrations } from "@vendure/core";
+import { config } from "./vendure-config";
+
 runMigrations(config)
-    .then(() => bootstrap(config))
-    .catch(err => {
-        console.log(err);
-    });
+  .then(() => bootstrap(config))
+  .catch((err) => {
+    console.log(err);
+  });
