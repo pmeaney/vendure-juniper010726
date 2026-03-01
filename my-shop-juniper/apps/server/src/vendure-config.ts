@@ -18,7 +18,7 @@ import path from "path";
 
 const IS_DEV = process.env.APP_ENV === "dev";
 const serverPort = +process.env.PORT || 3000;
-const SHOP_URL_PUBLIC = process.env.SHOP_URL_PUBLIC;
+const VENDURE_API_URL_PUBLIC = process.env.VENDURE_API_URL_PUBLIC;
 
 export const config: VendureConfig = {
   apiOptions: {
@@ -86,7 +86,7 @@ export const config: VendureConfig = {
       // For local dev, the correct value for assetUrlPrefix should
       // be guessed correctly, but for production it will usually need
       // to be set manually to match your production url.
-      assetUrlPrefix: IS_DEV ? undefined : `${SHOP_URL_PUBLIC}/assets/`,
+      assetUrlPrefix: IS_DEV ? undefined : `${VENDURE_API_URL_PUBLIC}/assets/`,
     }),
     DefaultSchedulerPlugin.init(),
     DefaultJobQueuePlugin.init({ useDatabaseForBuffer: true }),

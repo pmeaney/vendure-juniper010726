@@ -16,10 +16,15 @@ postgres_defaults: |
 # these items are the same for Vendure Server & Vendure Worker
 # I am adding VENDURE_API_HOST-- and setting it to my live URL's admin subdomain.
 # VENDURE_API_HOST=https://admin.mySite.com
+# Regarding "VENDURE_API_URL_PUBLIC" --its not even needed, it's handled by vendure-config file's:
+# assetUrlPrefix: IS_DEV ? undefined : `${process.env.VENDURE_API_URL_PUBLIC}/assets/`,
+# however, Ill keep it in these dev & non-live prod env vars for reference
+# On prod, be sure to update this:VENDURE_API_URL_PUBLIC=https://api.mySite.com
 vendure_srv_wrk_defaults: |
   APP_ENV=prod
   PORT=3000
   SHOP_URL_PUBLIC=http://localhost:3000
+  VENDURE_API_URL_PUBLIC=http://localhost:3000
   COOKIE_SECRET=U74rfhaXFCbbqzOB2kPtdg
   SUPERADMIN_USERNAME=superadmin
   SUPERADMIN_PASSWORD=superadmin
