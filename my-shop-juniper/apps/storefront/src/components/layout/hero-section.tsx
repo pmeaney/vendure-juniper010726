@@ -11,6 +11,7 @@ export function HeroSection() {
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto">
             Powered by Vendure and Next.js
+            {/*  */}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
             <Button asChild size="lg" className="min-w-[200px]">
