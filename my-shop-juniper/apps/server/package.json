@@ -13,7 +13,7 @@
     "start:server": "node ./dist/index.js",
     "start:worker": "node ./dist/index-worker.js",
     "start": "concurrently npm:start:*",
-    "seed": "ts-node ./src/seeds/seed.ts"
+    "seed": "tsx ./src/seeds/seed.ts"
   },
   "dependencies": {
     "@vendure/asset-server-plugin": "3.5.4",
@@ -29,6 +29,7 @@
     "@vendure/cli": "^3.5.4",
     "concurrently": "9.2.1",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "5.8.2"
   }
 }

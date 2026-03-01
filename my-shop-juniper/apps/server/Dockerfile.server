@@ -93,6 +93,7 @@ COPY --from=builder --chown=vendure:nodejs /usr/src/app/tsconfig.json ./tsconfig
 
 COPY --chown=vendure:nodejs env-defaults.env .env
 
+RUN npm install -g tsx
 USER vendure
 
 EXPOSE 3000
