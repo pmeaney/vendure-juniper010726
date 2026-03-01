@@ -4,6 +4,12 @@
 
 This document records how we determined the correct way to model seed data for the Online Shop Vendure project — what we looked for, what we found, how we interpreted it, and what we decided to build.
 
+NOTE: What was super helpful was finding this on github (via google search). The initial csv file-- I used it to create a first mock product item.
+Offical my-shop mock data & seed files:
+
+- products.csv: https://github.com/vendurehq/vendure/blob/master/packages/core/mock-data/data-sources/products.csv
+- initial-data.ts: https://github.com/vendurehq/vendure/blob/master/packages/core/mock-data/data-sources/initial-data.ts
+
 ---
 
 ## Part 0: Scaffolding a new throwaway test example

@@ -2,7 +2,7 @@
 
 Chatted with ClaudeAI & ChatGPT a bit to try to get a sense of how to find the right files and determine the right setup for the db schema & initial seed data.
 
-What was super helpful was finding this. The initial csv file-- I used it to create a first mock product item.
+What was super helpful was finding this on github (via google search). The initial csv file-- I used it to create a first mock product item.
 Offical my-shop mock data & seed files:
 
 - products.csv: https://github.com/vendurehq/vendure/blob/master/packages/core/mock-data/data-sources/products.csv
