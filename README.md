@@ -21,6 +21,9 @@ chmod +x ./project-shellscripts/generate-lockfiles.sh
 # run the local docker-compose.local.yml file
 docker compose -f docker-compose.local.yml up
 
+# seed the db
+docker exec -it vendure-juniper010726-vendure-server-1 npm run seed
+
 # Then, visit via Browser:
 # Storefront:            http://localhost:3001
 # Admin Dashboard:       http://localhost:5173/dashboard

@@ -87,6 +87,7 @@ COPY --from=builder --chown=vendure:nodejs /usr/src/app/node_modules ./node_modu
 COPY --from=builder --chown=vendure:nodejs /usr/src/app/package.json ./package.json
 COPY --from=builder --chown=vendure:nodejs /usr/src/app/static ./static
 COPY --from=builder --chown=vendure:nodejs /usr/src/app/src/migrations ./src/migrations
+COPY --from=builder --chown=vendure:nodejs /usr/src/app/src/seeds ./src/seeds
 
 COPY --chown=vendure:nodejs env-defaults.env .env
 
