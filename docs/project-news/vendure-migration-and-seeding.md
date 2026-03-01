@@ -8,7 +8,7 @@ import Callout from "@/components/Callout.astro";
 
 ---
 
-# Seeding and Migrating a Vendure Store in Production (And the Gotchas That Will Get You)
+## Seeding and Migrating a Vendure Store in Production (And the Gotchas That Will Get You)
 
 I'm building a handmade guitar marketplace on [Vendure](https://www.vendure.io/) — a TypeScript-first, headless commerce framework. Getting the local dev environment seeded was straightforward enough. Getting it working in production was a different story.
 
@@ -28,11 +28,6 @@ populate(
   channelOrToken?: string | Channel
 )
 ```
-
-You can find the offical my-shop initial data & seed data files here
-
-- products.csv -- lists the product data: https://github.com/vendurehq/vendure/blob/master/packages/core/mock-data/data-sources/products.csv
-- initial-data.ts -- defines the schema: https://github.com/vendurehq/vendure/blob/master/packages/core/mock-data/data-sources/initial-data.ts
 
 **Phase 1 — Initial Data:** Establishes the store's structural foundation: zones, countries, tax rates, shipping methods, payment methods, and the collection tree. This is defined in a typed `InitialData` object.
 
@@ -106,9 +101,9 @@ dt-c-1  →  Dulcinea Toboso, Classical, unit 1
 
 This maps directly to a planned vendor URL pattern: `shop.example.com/aq/aq-c-1`. Human-readable, memorable, and the vendor can identify their own products at a glance.
 
-### Dev Fixtures
+### Placeholder Data
 
-The three fixture luthiers are named after characters from _Don Quixote_ — anonymized stand-ins for real people. Five guitars total, five photos each (25 images), following a consistent shot list:
+The three placeholder luthiers are named after characters from _Don Quixote_ — anonymized stand-ins for real people. Five guitars total, five photos each (25 images), following a consistent shot list:
 
 | Filename           | Shot                   |
 | ------------------ | ---------------------- |
