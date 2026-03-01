@@ -12,7 +12,7 @@ async function getFeaturedCollectionProducts() {
   const result = await query(GetCollectionProductsQuery, {
     slug: "featured",
     input: {
-      collectionSlug: "featured",
+      collectionSlug: "featured-guitars",
       take: 12,
       skip: 0,
       groupByProduct: true,
