@@ -15,7 +15,7 @@ import { DashboardPlugin } from "@vendure/dashboard/plugin";
 import { GraphiqlPlugin } from "@vendure/graphiql-plugin";
 import "dotenv/config";
 import path from "path";
-// test
+
 const IS_DEV = process.env.APP_ENV === "dev";
 const serverPort = +process.env.PORT || 3000;
 const VENDURE_API_URL_PUBLIC = process.env.VENDURE_API_URL_PUBLIC;
