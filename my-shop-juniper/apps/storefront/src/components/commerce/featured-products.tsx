@@ -10,7 +10,7 @@ async function getFeaturedCollectionProducts() {
   // Fetch featured products from a specific collection
   // Replace 'featured' with your actual collection slug
   const result = await query(GetCollectionProductsQuery, {
-    slug: "featured",
+    slug: "featured-guitars",
     input: {
       collectionSlug: "featured-guitars",
       take: 12,

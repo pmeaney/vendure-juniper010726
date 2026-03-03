@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev:server": "ts-node ./src/index.ts",
-    "dev:worker": "ts-node ./src/index-worker.ts",
+    "dev:server": "tsx ./src/index.ts",
+    "dev:worker": "tsx ./src/index-worker.ts",
     "dev:dashboard": "vite --clearScreen false",
     "dev": "concurrently --kill-others npm:dev:*",
     "dev:container": "concurrently npm:dev:server npm:dev:dashboard",

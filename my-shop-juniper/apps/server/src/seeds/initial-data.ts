@@ -89,6 +89,16 @@ export const initialData: InitialData = {
   ],
   collections: [
     {
+      name: "Featured Guitars",
+      filters: [
+        {
+          code: "facet-value-filter",
+          args: { facetValueNames: ["Featured Guitars"], containsAny: false },
+        },
+      ],
+      assetPaths: ["guitar-general-classical.jpg"],
+    },
+    {
       name: "Guitars",
       filters: [
         {
