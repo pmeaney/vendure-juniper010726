@@ -89,16 +89,6 @@ export const initialData: InitialData = {
   ],
   collections: [
     {
-      name: "Featured Guitars",
-      filters: [
-        {
-          code: "facet-value-filter",
-          args: { facetValueNames: ["Featured Guitars"], containsAny: false },
-        },
-      ],
-      assetPaths: ["guitar-general-classical.jpg"],
-    },
-    {
       name: "Guitars",
       filters: [
         {
@@ -128,6 +118,17 @@ export const initialData: InitialData = {
         },
       ],
       assetPaths: ["guitar-general-flamenco.jpg"],
+      parentName: "Guitars",
+    },
+    {
+      name: "Featured Guitars",
+      filters: [
+        {
+          code: "facet-value-filter",
+          args: { facetValueNames: ["Featured Guitars"], containsAny: false },
+        },
+      ],
+      assetPaths: ["guitar-general-classical.jpg"],
       parentName: "Guitars",
     },
   ],
