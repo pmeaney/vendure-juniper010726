@@ -1,5 +1,14 @@
 # Vendure: Seeding a Featured Products Collection
 
+## Resources
+
+- Offical my-shop mock data & seed files:
+  products.csv: https://github.com/vendurehq/vendure/blob/master/packages/core/mock-data/data-sources/products.csv
+- initial-data.ts: https://github.com/vendurehq/vendure/blob/master/packages/core/mock-data/data-sources/initial-data.ts
+
+- The default featured-products component:
+  https://github.com/vendurehq/nextjs-starter-vendure/blob/main/src/components/commerce/featured-products.tsx#L10-L20
+
 ## The Problem
 
 One of the first UI goals for the storefront was getting a "Featured Products" carousel on the homepage. The component was already there, querying Vendure's search API by collection slug — but the carousel was empty.
