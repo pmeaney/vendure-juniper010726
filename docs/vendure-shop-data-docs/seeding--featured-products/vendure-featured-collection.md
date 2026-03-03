@@ -28,6 +28,8 @@ The `facet-value-filter` is the most common filter type. It checks whether a pro
 
 ### 1. Add the "Featured Guitars" collection to `initial-data.ts`
 
+Note: if you don't add `parentName: "Guitars",` then things won't work properly-- "guitars" will no longer appear in the nav bar, and the homepage won't be populated by the featured guitars. Though they will appear as a category in the store's product list view.
+
 ```typescript
 {
   name: "Featured Guitars",
@@ -38,6 +40,7 @@ The `facet-value-filter` is the most common filter type. It checks whether a pro
     },
   ],
   assetPaths: ["guitar-general-classical.jpg"],
+  parentName: "Guitars",
 }
 ```
 
