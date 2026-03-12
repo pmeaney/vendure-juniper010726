@@ -82,54 +82,51 @@ git push origin v2.0-prototype-prod
 
 **Between v2.0 and v3.0 - Essential Security & Payment Activation:**
 
-Between v2.0 and v3.0 – Essential Security & Payment Activation
 Application-Level (Vendure)
 
-📋 🔒 HardenPlugin configured (GraphQL depth / cost limiting)
-📋 🔒 Rate limiting on API endpoints
-📋 🔒 Restrictive CORS configuration (production origins only)
+- 📋 🔒 HardenPlugin configured (GraphQL depth / cost limiting)
+- 📋 🔒 Rate limiting on API endpoints
+- 📋 🔒 Restrictive CORS configuration (production origins only)
 
 Infrastructure-Level
-🔒 Edge & Protection
 
-📋 🔒 Cloudflare integration (DNS, SSL, CDN)
-📋 🔒 Basic Cloudflare WAF rules
-📋 🔒 Trust proxy configuration for Express
-📋 🔒 Force HTTPS (redirect HTTP → HTTPS)
-📋 🔒 Secure + HttpOnly cookies verified
-📋 🔒 SameSite cookie policy verified
+- 📋 🔒 Cloudflare integration (DNS, SSL, CDN)
+- 📋 🔒 Basic Cloudflare WAF rules
+- 📋 🔒 Trust proxy configuration for Express
+- 📋 🔒 Force HTTPS (redirect HTTP → HTTPS)
+- 📋 🔒 Secure + HttpOnly cookies verified
+- 📋 🔒 SameSite cookie policy verified
 
-🔒 Data Integrity
+Data Integrity
 
-📋 🔒 Database timezone verification (UTC)
-📋 🔒 Weekly automated database backups
+- 📋 🔒 Database timezone verification (UTC)
+- 📋 🔒 Weekly automated database backups
 
-🔎 Observability & Incident Response
+Observability & Incident Response
 
-📋 🔒 Error logging (structured logs or Sentry)
-📋 🔒 Alerting on 5xx errors
-📋 🔒 Uptime monitoring (UptimeRobot free tier)
+- 📋 🔒 Error logging (structured logs or Sentry)
+- 📋 🔒 Alerting on 5xx errors
+- 📋 🔒 Uptime monitoring (UptimeRobot free tier)
 
-🔒 Runtime Safety
+Runtime Safety
 
-📋 🔒 Container resource limits
+- 📋 🔒 Container resource limits
 
 Payment Activation
 
-📋 💳 Switch Stripe to live mode (production API keys)
-📋 💳 Switch PayPal to live mode
-📋 💳 Test live transactions ($1 test purchases)
-📋 💳 Verify webhook handling in production (success, failure, refund)
-📋 🔒 Verify Stripe webhook signature validation
-📋 🔒 Verify PayPal webhook signature validation
+- 📋 💳 Switch Stripe to live mode (production API keys)
+- 📋 💳 Switch PayPal to live mode
+- 📋 💳 Test live transactions ($1 test purchases)
+- 📋 💳 Verify webhook handling in production (success, failure, refund)
+- 📋 🔒 Verify Stripe webhook signature validation
+- 📋 🔒 Verify PayPal webhook signature validation
 
 **v3.0 - Production Ready** 📋
 
 - All v2.0 features plus essential security hardening
 - Payment providers: Live mode active and tested
 - Public-facing production ready
-- Ready to accept real customer orders
-- **Time investment: 1-2 weeks (10-15 hours)**
+- Ready to accept customer orders
 
 ```bash
 git tag -a v3.0-production -m "Production-ready deployment complete"
