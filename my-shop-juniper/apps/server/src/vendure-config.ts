@@ -16,6 +16,8 @@ import { GraphiqlPlugin } from "@vendure/graphiql-plugin";
 import "dotenv/config";
 import path from "path";
 
+import { HardenPlugin } from "@vendure/harden-plugin";
+
 const IS_DEV = process.env.APP_ENV === "dev";
 const serverPort = +process.env.PORT || 3000;
 const VENDURE_API_URL_PUBLIC = process.env.VENDURE_API_URL_PUBLIC;
@@ -79,6 +81,10 @@ export const config: VendureConfig = {
     importAssetsDir: path.join(__dirname, "seeds", "assets"),
   },
   plugins: [
+    HardenPlugin.init({
+      maxQueryComplexity: 500,
+      apiMode: IS_DEV ? "dev" : "prod",
+    }),
     GraphiqlPlugin.init(),
     AssetServerPlugin.init({
       route: "assets",
