@@ -84,8 +84,8 @@ git push origin v2.0-prototype-prod
 
 Application-Level (Vendure)
 
-- 📋 🔒 HardenPlugin configured (GraphQL depth / cost limiting)
-- 📋 🔒 Rate limiting on API endpoints
+- ✅ 🔒 HardenPlugin configured (GraphQL depth / cost limiting)
+- ✅ 🔒 Rate limiting on API endpoints (nginx proxy mgr)
 - 📋 🔒 Restrictive CORS configuration (production origins only)
 
 Infrastructure-Level
