@@ -46,6 +46,12 @@ export const config: VendureConfig = {
     },
     cookieOptions: {
       secret: process.env.COOKIE_SECRET,
+      httpOnly: true,
+      secure: IS_DEV ? false : true,
+      sameSite: IS_DEV ? "lax" : "none",
+      signed: true,
+      overwrite: true,
+      maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days in milliseconds
     },
   },
   dbConnectionOptions: {
