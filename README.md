@@ -92,8 +92,7 @@ Infrastructure-Level
 
 - 📋 🔒 Cloudflare integration (DNS, SSL, CDN)
 - 📋 🔒 Basic Cloudflare WAF rules
-- 📋 🔒 Trust proxy configuration for Express
-- 📋 🔒 Force HTTPS (redirect HTTP → HTTPS)
+- 📋 🔒 Trust proxy configuration
 - 📋 🔒 Secure + HttpOnly cookies verified
 - 📋 🔒 SameSite cookie policy verified
 

@@ -138,17 +138,18 @@ Create custom rule:
 
 ## 2.3 Trust Proxy (Required Behind Cloudflare + Nginx)
 
-In server bootstrap:
+In `src/index.ts` after bootstrap:
 
 ```ts
-app.set("trust proxy", 1);
+const app = await bootstrap(config);
+app.getHttpAdapter().getInstance().set("trust proxy", 1);
 ```
 
 Required for:
 
-- Correct IP detection
-- Secure cookies
-- Rate limiting accuracy
+- Correct IP detection behind Cloudflare + Nginx
+- Secure cookie handling
+- Accurate IP-based logic (fraud detection, application-layer rate limiting)
 
 ---
 
