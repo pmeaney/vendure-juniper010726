@@ -39,6 +39,25 @@ To deploy via prod requires a bit of setup:
 - See the CICD Deploy docs at `./docs/cicd-deployment-setup`
 - And the CICD files at `./.github/workflows`
 
+## ⚠️ Adding or Updating npm Packages
+
+This project uses named Docker volumes for `node_modules` (e.g. `server-node-modules`, `worker-node-modules`). Named volumes persist between runs, which means if you add or update packages, the container will keep using the old cached `node_modules` and won't pick up the changes.
+
+After adding or updating packages, wipe the named volumes and rebuild:
+
+```bash
+# Wipe volumes and bring down containers
+docker compose -f docker-compose.local.yml down -v
+
+# Reinstall packages (generates Linux-compatible lockfile)
+./project-shellscripts/generate-lockfiles.sh
+
+# Bring back up with fresh node_modules
+docker compose -f docker-compose.local.yml up --build
+```
+
+The `-v` flag removes named volumes. Without it, your new packages won't be visible inside the containers.
+
 ## Version Benchmarks
 
 **v1.0 - Local Development** ✅ (02/17/26 - 00a281f - v1.0-local-dev)
@@ -103,7 +122,7 @@ Data Integrity
 
 Observability & Incident Response
 
-- 📋 🔒 Error logging (structured logs or Sentry)
+- ✅ 🔒 Error logging (setup SentryPlugin, verified)
 - 📋 🔒 Alerting on 5xx errors
 - 📋 🔒 Uptime monitoring (UptimeRobot free tier)
 
