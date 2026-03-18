@@ -17,6 +17,7 @@ import "dotenv/config";
 import path from "path";
 
 import { HardenPlugin } from "@vendure/harden-plugin";
+import { SentryPlugin } from "@vendure/sentry-plugin";
 
 const IS_DEV = process.env.APP_ENV === "dev";
 const serverPort = +process.env.PORT || 3000;
@@ -90,6 +91,9 @@ export const config: VendureConfig = {
     HardenPlugin.init({
       maxQueryComplexity: 500,
       apiMode: IS_DEV ? "dev" : "prod",
+    }),
+    SentryPlugin.init({
+      includeErrorTestMutation: IS_DEV ? true : false,
     }),
     GraphiqlPlugin.init(),
     AssetServerPlugin.init({

@@ -35,6 +35,9 @@ vendure_srv_wrk_defaults: |
   DB_PASSWORD=vendure_db_pass
   DB_SCHEMA=public
   VENDURE_API_HOST=https://admin.mySite.com
+  SENTRY_DSN=someDSN
+  SENTRY_TRACES_SAMPLE_RATE=0.2
+  SENTRY_PROFILES_SAMPLE_RATE=0.2
 
 # For Prod, NEXT_PUBLIC_SITE_URL must be https, not http.
 #   Used for: SEO metadata (canonical URLs), Open Graph tags for social media, Sitemap generation, Redirects

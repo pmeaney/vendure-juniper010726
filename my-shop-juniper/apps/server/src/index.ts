@@ -1,3 +1,4 @@
+import "./instrument";
 import { bootstrap, runMigrations } from "@vendure/core";
 import { config } from "./vendure-config";
 
