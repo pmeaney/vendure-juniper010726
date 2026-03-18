@@ -92,7 +92,7 @@ Infrastructure-Level
 
 - 📋 🔒 Cloudflare integration (DNS, SSL, CDN)
 - 📋 🔒 Basic Cloudflare WAF rules
-- 📋 🔒 Trust proxy configuration
+- ✅ 🔒 Trust proxy configuration
 - 📋 🔒 Secure + HttpOnly cookies verified
 - 📋 🔒 SameSite cookie policy verified
 
